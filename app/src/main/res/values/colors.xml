@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">@color/material_dynamic_primary</color>
+    <color name="colorPrimaryDark">@color/material_dynamic_primary_dark</color>
+    <color name="colorAccent">@color/material_dynamic_secondary</color>
+
+    <!-- Surface/background/text colors -->
+    <color name="colorSurface">@color/material_dynamic_surface</color>
+    <color name="colorBackground">@color/material_dynamic_background</color>
+    <color name="colorOnPrimary">@color/material_dynamic_on_primary</color>
+    <color name="colorOnSurface">@color/material_dynamic_on_surface</color>
+    <color name="colorOnBackground">@color/material_dynamic_on_background</color>
+    <color name="colorTextPrimary">@color/material_dynamic_on_surface</color>
+    <color name="colorTextSecondary">@color/material_dynamic_on_surface</color>
+
+    <!-- Semantic colors, fallback to material palette for pre-12 -->
+    <color name="material_blue_700">#1976D2</color>
+    <color name="material_red_700">#D32F2F</color>
+    <color name="material_green_700">#388E3C</color>
+    <color name="material_orange_700">#F57C00</color>
+    <color name="material_grey_300">#E0E0E0</color>
+    <color name="material_grey_500">#9E9E9E</color>
+    <color name="material_grey_700">#616161</color>
+
+    <!-- Status colors -->
+    <color name="colorSuccess">@color/material_green_700</color>
+    <color name="colorError">@color/material_red_700</color>
+    <color name="colorWarning">@color/material_orange_700</color>
+    <color name="colorInfo">@color/material_blue_700</color>
+
+
+</resources>

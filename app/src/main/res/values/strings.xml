@@ -1,0 +1,24 @@
+<resources>
+
+    <string name="app_name">DaysLeft</string>
+
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="fill_field">Fill all field</string>
+
+    <string name="event_deleted">Event deleted</string>
+    <string name="undo">Undo</string>
+    <string name="empty_events">No events yet! Tap \'+\' to add your first event.</string>
+    <string name="edit_event">Edit event</string>
+    <string name="delete_event">Delete event</string>
+
+    <!-- Add/Edit Event Bottom Sheet -->
+    <string name="event_title_hint">Event Title</string>
+    <string name="select_date">Select Date</string>
+    <string name="save">Save</string>
+    <string name="update">Update</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Accessibility -->
+    <string name="add_event">Add event</string>
+</resources>
