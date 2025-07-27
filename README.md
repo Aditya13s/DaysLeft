@@ -88,6 +88,15 @@ The app follows clean architecture principles with clear separation between:
 
 Releases are automatically built and published when version tags are pushed to the repository. Each release includes both APK and AAB files for easy distribution.
 
+### Creating a Release
+To create a new release:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+See [GitHub Actions Workflows](.github/WORKFLOWS.md) for more details.
+
 ## 🤝 Contributing
 
 1. Fork the repository
