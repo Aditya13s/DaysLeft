@@ -1,0 +1,57 @@
+name: Android Auto Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Triggers only for version tags like v1.0.0
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease
+
+      - name: Extract version info
+        id: version
+        run: |
+          VERSION_NAME=$(grep versionName app/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          VERSION_CODE=$(grep versionCode app/build.gradle | head -1 | awk '{print $2}')
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release v${{ env.VERSION_NAME }} (Code: ${{ env.VERSION_CODE }})"
+          body: |
+            🎉 **Release v${{ env.VERSION_NAME }} (Code: ${{ env.VERSION_CODE }})**
+
+            **What's new?**
+            - First public release.
+            - See repository changelog for features and fixes.
+
+            **Files:**
+            - APK for direct install
+            - AAB for Play Store upload
+
+            ---
+            _Built automatically by GitHub Actions._
+          tag_name: ${{ github.ref_name }}
+          files: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
