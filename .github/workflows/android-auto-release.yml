@@ -1,4 +1,4 @@
-name: Build and Release
+name: Release Build
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*' # Triggers on version tags like v1.0, v1.1.0, etc.
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     
     steps:
@@ -18,6 +18,19 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
