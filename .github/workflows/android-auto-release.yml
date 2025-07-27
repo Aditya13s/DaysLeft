@@ -32,23 +32,45 @@ jobs:
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
 
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          # Extract changelog content for current version
+          if [ -f "CHANGELOG.md" ]; then
+            VERSION_NAME=$(grep 'versionName = ' app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
+            # Extract section between current version and next version or end
+            CHANGELOG_CONTENT=$(awk "/## \[$VERSION_NAME\]/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md | sed '/^$/d' | head -20)
+            if [ -n "$CHANGELOG_CONTENT" ]; then
+              echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+              echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+            else
+              echo "RELEASE_NOTES=See repository changelog for details." >> $GITHUB_ENV
+            fi
+          else
+            echo "RELEASE_NOTES=See repository changelog for details." >> $GITHUB_ENV
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "Release v${{ env.VERSION_NAME }} (Code: ${{ env.VERSION_CODE }})"
+          name: "Release v${{ env.VERSION_NAME }} (Build ${{ env.VERSION_CODE }})"
           body: |
-            🎉 **Release v${{ env.VERSION_NAME }} (Code: ${{ env.VERSION_CODE }})**
+            🎉 **Release v${{ env.VERSION_NAME }} (Build ${{ env.VERSION_CODE }})**
 
-            **What's new?**
-            - First public release.
-            - See repository changelog for features and fixes.
+            ${{ env.RELEASE_NOTES }}
 
-            **Files:**
-            - APK for direct install
-            - AAB for Play Store upload
+            **Download:**
+            - **APK**: Direct installation file for Android devices
+            - **AAB**: Android App Bundle for Play Store distribution
+
+            **Technical Details:**
+            - Build: ${{ env.VERSION_CODE }}
+            - Commit: ${{ github.sha }}
+            - Built: ${{ github.run_number }}
 
             ---
-            _Built automatically by GitHub Actions._
+            _Built automatically by GitHub Actions_
           tag_name: ${{ github.ref_name }}
           files: |
             app/build/outputs/apk/release/*.apk
