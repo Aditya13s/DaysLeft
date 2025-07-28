@@ -30,7 +30,13 @@
         <item name="colorSurfaceContainerLow">@color/material_dynamic_surface_container_low</item>
         <item name="colorSurfaceContainerHigh">@color/material_dynamic_surface_container_high</item>
         <item name="colorSurfaceContainerHighest">@color/material_dynamic_surface_container_highest</item>
-        
+        1-4c89-b4a8-5c0240efb242 -> origin/copilot/fix-27c35771-e591-4c89-b4a8-5c0240efb242
+        ~/AndroidStudioProjects/DaysLeft git:[copilot/fix-27c35771-e591-4c89-b4a8-5c0240efb242]
+        git pull
+
+        Updating ca9846b..2dd6e2d
+        Fast-forward
+        app/src/main/res/values-night/themes.x
         <item name="android:colorBackground">@color/material_dynamic_background</item>
         <item name="colorOnBackground">@color/material_dynamic_on_background</item>
         
