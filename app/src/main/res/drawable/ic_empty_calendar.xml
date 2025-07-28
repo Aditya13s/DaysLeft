@@ -8,46 +8,46 @@
     <!-- Background circle -->
     <path
         android:pathData="M60,60m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0"
-        android:fillColor="?attr/colorSurfaceContainer" />
+        android:fillColor="?android:attr/colorBackground" />
     
     <!-- Calendar base -->
     <path
         android:pathData="M35,40h50c2.76,0 5,2.24 5,5v40c0,2.76 -2.24,5 -5,5H35c-2.76,0 -5,-2.24 -5,-5V45c0,-2.76 2.24,-5 5,-5z"
-        android:fillColor="?attr/colorSurface"
-        android:strokeColor="?attr/colorOutline"
+        android:fillColor="?android:attr/colorBackground"
+        android:strokeColor="?attr/colorPrimary"
         android:strokeWidth="1.5" />
     
     <!-- Calendar header -->
     <path
         android:pathData="M30,45h60v12H30z"
-        android:fillColor="?attr/colorPrimaryContainer" />
+        android:fillColor="?attr/colorPrimary" />
     
     <!-- Calendar binding rings -->
     <circle
         android:cx="43"
         android:cy="37"
         android:r="2"
-        android:fillColor="?attr/colorOnSurfaceVariant" />
+        android:fillColor="?android:attr/textColorSecondary" />
     <circle
         android:cx="60"
         android:cy="37"
         android:r="2"
-        android:fillColor="?attr/colorOnSurfaceVariant" />
+        android:fillColor="?android:attr/textColorSecondary" />
     <circle
         android:cx="77"
         android:cy="37"
         android:r="2"
-        android:fillColor="?attr/colorOnSurfaceVariant" />
+        android:fillColor="?android:attr/textColorSecondary" />
     
     <!-- Calendar grid lines -->
     <path
         android:pathData="M35,65h50M35,72h50M35,79h50"
-        android:strokeColor="?attr/colorOutlineVariant"
+        android:strokeColor="?android:attr/textColorSecondary"
         android:strokeWidth="0.5" />
     
     <path
         android:pathData="M43,57v28M52,57v28M61,57v28M70,57v28M79,57v28"
-        android:strokeColor="?attr/colorOutlineVariant"
+        android:strokeColor="?android:attr/textColorSecondary"
         android:strokeWidth="0.5" />
     
     <!-- Empty state dots pattern -->
@@ -55,39 +55,39 @@
         android:cx="39"
         android:cy="61"
         android:r="1"
-        android:fillColor="?attr/colorOnSurfaceVariant"
+        android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     <circle
         android:cx="48"
         android:cy="61"
         android:r="1"
-        android:fillColor="?attr/colorOnSurfaceVariant"
+        android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     <circle
         android:cx="57"
         android:cy="61"
         android:r="1"
-        android:fillColor="?attr/colorOnSurfaceVariant"
+        android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     
     <circle
         android:cx="39"
         android:cy="68"
         android:r="1"
-        android:fillColor="?attr/colorOnSurfaceVariant"
+        android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     <circle
         android:cx="48"
         android:cy="68"
         android:r="1"
-        android:fillColor="?attr/colorOnSurfaceVariant"
+        android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     
     <circle
         android:cx="57"
         android:cy="75"
         android:r="1"
-        android:fillColor="?attr/colorOnSurfaceVariant"
+        android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     
     <!-- Accent decoration - small plus icon to suggest adding -->
