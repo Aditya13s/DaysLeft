@@ -3,9 +3,11 @@ package com.aditya.daysleft.presentation.eventlist
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.aditya.daysleft.R
 import com.aditya.daysleft.databinding.ItemEventBinding
 import com.aditya.daysleft.databinding.ItemSectionHeaderBinding
 import com.aditya.daysleft.domain.model.Event
+import com.aditya.daysleft.domain.model.FilterOption
 import com.aditya.daysleft.utils.DaysLeftUtil
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -17,48 +19,80 @@ class EventAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var listItems: List<EventListItem> = emptyList()
+    private var currentFilter: FilterOption = FilterOption.ALL
 
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_EVENT = 1
     }
 
-    fun submitList(events: List<Event>) {
-        listItems = buildListItems(events)
+    fun submitList(events: List<Event>, filterOption: FilterOption = FilterOption.ALL) {
+        currentFilter = filterOption
+        listItems = buildListItems(events, filterOption)
         notifyDataSetChanged()
     }
 
-    private fun buildListItems(events: List<Event>): List<EventListItem> {
+    private fun buildListItems(events: List<Event>, filterOption: FilterOption): List<EventListItem> {
         if (events.isEmpty()) return emptyList()
         
         val sortedEvents = events.sortedBy { it.dateMillis }
-        val todayEvents = sortedEvents.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
-        val upcomingEvents = sortedEvents.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
-        val pastEvents = sortedEvents.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
-        
         val listItems = mutableListOf<EventListItem>()
         
-        // Add today events section
-        if (todayEvents.isNotEmpty()) {
-            listItems.add(EventListItem.SectionHeader(EventSection.TODAY.title))
-            todayEvents.forEach { event ->
-                listItems.add(EventListItem.EventItem(event))
+        // For specific filters, don't show sections, just show the events
+        when (filterOption) {
+            FilterOption.TODAY -> {
+                // Show only today events without section header
+                sortedEvents.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }.forEach { event ->
+                    listItems.add(EventListItem.EventItem(event))
+                }
             }
-        }
-        
-        // Add upcoming events section
-        if (upcomingEvents.isNotEmpty()) {
-            listItems.add(EventListItem.SectionHeader(EventSection.UPCOMING.title))
-            upcomingEvents.forEach { event ->
-                listItems.add(EventListItem.EventItem(event))
+            FilterOption.UPCOMING -> {
+                // Show only upcoming events without section header
+                sortedEvents.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }.forEach { event ->
+                    listItems.add(EventListItem.EventItem(event))
+                }
             }
-        }
-        
-        // Add past events section
-        if (pastEvents.isNotEmpty()) {
-            listItems.add(EventListItem.SectionHeader(EventSection.PAST.title))
-            pastEvents.reversed().forEach { event -> // Most recent past events first
-                listItems.add(EventListItem.EventItem(event))
+            FilterOption.PAST -> {
+                // Show only past events without section header, most recent first
+                sortedEvents.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }.reversed().forEach { event ->
+                    listItems.add(EventListItem.EventItem(event))
+                }
+            }
+            FilterOption.NEXT_7_DAYS -> {
+                // Show events in next 7 days without section header
+                sortedEvents.forEach { event ->
+                    listItems.add(EventListItem.EventItem(event))
+                }
+            }
+            FilterOption.ALL -> {
+                // Show all events with sections
+                val todayEvents = sortedEvents.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
+                val upcomingEvents = sortedEvents.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
+                val pastEvents = sortedEvents.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
+                
+                // Add today events section
+                if (todayEvents.isNotEmpty()) {
+                    listItems.add(EventListItem.SectionHeader(EventSection.TODAY.title))
+                    todayEvents.forEach { event ->
+                        listItems.add(EventListItem.EventItem(event))
+                    }
+                }
+                
+                // Add upcoming events section
+                if (upcomingEvents.isNotEmpty()) {
+                    listItems.add(EventListItem.SectionHeader(EventSection.UPCOMING.title))
+                    upcomingEvents.forEach { event ->
+                        listItems.add(EventListItem.EventItem(event))
+                    }
+                }
+                
+                // Add past events section
+                if (pastEvents.isNotEmpty()) {
+                    listItems.add(EventListItem.SectionHeader(EventSection.PAST.title))
+                    pastEvents.reversed().forEach { event -> // Most recent past events first
+                        listItems.add(EventListItem.EventItem(event))
+                    }
+                }
             }
         }
         
@@ -77,19 +111,23 @@ class EventAdapter(
             val daysText = DaysLeftUtil.getRelativeDateText(event.dateMillis)
             binding.chipDaysLeft.text = daysText
             
-            // Set chip color based on urgency - using color state list for better theming
+            // Set chip color based on urgency for better visual distinction
+            val context = binding.root.context
             when {
                 DaysLeftUtil.isTodayEvent(event.dateMillis) -> {
-                    // Today events - use primary color for emphasis
-                    binding.chipDaysLeft.chipBackgroundColor = null // Use default theme color
+                    // Today events - use orange for urgency
+                    binding.chipDaysLeft.setChipBackgroundColorResource(R.color.chip_today_background)
+                    binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_today_text))
                 }
                 DaysLeftUtil.isPastEvent(event.dateMillis) -> {
-                    // Past events - use surface variant for muted appearance
-                    binding.chipDaysLeft.chipBackgroundColor = null // Use default theme color
+                    // Past events - use gray for completed/past items
+                    binding.chipDaysLeft.setChipBackgroundColorResource(R.color.chip_past_background)
+                    binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_past_text))
                 }
                 else -> {
-                    // Future events - use primary container color
-                    binding.chipDaysLeft.chipBackgroundColor = null // Use default theme color
+                    // Future events - use secondary container color
+                    binding.chipDaysLeft.setChipBackgroundColorResource(R.color.chip_upcoming_background)
+                    binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_upcoming_text))
                 }
             }
             

@@ -66,4 +66,12 @@
     <color name="colorError">@color/material_dynamic_error</color>
     <color name="colorWarning">@color/material_orange_700</color>
     <color name="colorInfo">@color/material_blue_700</color>
+    
+    <!-- Event status chip colors -->
+    <color name="chip_today_background">#FF6B35</color>
+    <color name="chip_today_text">#FFFFFF</color>
+    <color name="chip_upcoming_background">@color/material_dynamic_secondary_container</color>
+    <color name="chip_upcoming_text">@color/material_dynamic_on_secondary_container</color>
+    <color name="chip_past_background">#6B7280</color>
+    <color name="chip_past_text">#FFFFFF</color>
 </resources>

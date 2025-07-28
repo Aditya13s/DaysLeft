@@ -53,8 +53,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeEvents() {
         eventViewModel.events.observe(this) { events ->
-            adapter.submitList(events)
+            val currentFilter = eventViewModel.filterOption.value ?: FilterOption.ALL
+            adapter.submitList(events, currentFilter)
             updateEmptyState(events)
+        }
+        
+        // Also observe filter changes to update the adapter
+        eventViewModel.filterOption.observe(this) { filterOption ->
+            val currentEvents = eventViewModel.events.value ?: emptyList()
+            adapter.submitList(currentEvents, filterOption)
         }
     }
 
@@ -80,6 +87,7 @@ class MainActivity : AppCompatActivity() {
             val filterOption = when {
                 checkedIds.contains(R.id.chipToday) -> FilterOption.TODAY
                 checkedIds.contains(R.id.chipUpcoming) -> FilterOption.UPCOMING
+                checkedIds.contains(R.id.chipPast) -> FilterOption.PAST
                 checkedIds.contains(R.id.chipNext7Days) -> FilterOption.NEXT_7_DAYS
                 else -> FilterOption.ALL
             }
