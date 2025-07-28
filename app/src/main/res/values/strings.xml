@@ -8,7 +8,13 @@
 
     <string name="event_deleted">Event deleted</string>
     <string name="undo">Undo</string>
+    
+    <!-- Empty State -->
     <string name="empty_events">No events yet! Tap \'+\' to add your first event.</string>
+    <string name="empty_events_title">No Events Yet</string>
+    <string name="empty_events_subtitle">Start tracking your important dates by adding your first event</string>
+    <string name="empty_events_illustration">Empty calendar illustration</string>
+    
     <string name="edit_event">Edit event</string>
     <string name="delete_event">Delete event</string>
 

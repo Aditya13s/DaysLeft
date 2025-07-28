@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateEmptyState(events: List<Event>?) {
         val isEmpty = events.isNullOrEmpty()
-        binding.textEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.emptyStateContainer.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.eventRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 }

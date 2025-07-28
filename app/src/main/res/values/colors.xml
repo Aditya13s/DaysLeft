@@ -3,8 +3,45 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Material 3 Dynamic Colors - Fallback for pre-Android 12 -->
+    <color name="material_dynamic_primary">#6750A4</color>
+    <color name="material_dynamic_on_primary">#FFFFFF</color>
+    <color name="material_dynamic_primary_container">#EADDFF</color>
+    <color name="material_dynamic_on_primary_container">#21005D</color>
+    
+    <color name="material_dynamic_secondary">#625B71</color>
+    <color name="material_dynamic_on_secondary">#FFFFFF</color>
+    <color name="material_dynamic_secondary_container">#E8DEF8</color>
+    <color name="material_dynamic_on_secondary_container">#1D192B</color>
+    
+    <color name="material_dynamic_tertiary">#7D5260</color>
+    <color name="material_dynamic_on_tertiary">#FFFFFF</color>
+    <color name="material_dynamic_tertiary_container">#FFD8E4</color>
+    <color name="material_dynamic_on_tertiary_container">#31111D</color>
+    
+    <color name="material_dynamic_error">#BA1A1A</color>
+    <color name="material_dynamic_on_error">#FFFFFF</color>
+    <color name="material_dynamic_error_container">#FFDAD6</color>
+    <color name="material_dynamic_on_error_container">#410002</color>
+    
+    <color name="material_dynamic_surface">#FEF7FF</color>
+    <color name="material_dynamic_on_surface">#1C1B1F</color>
+    <color name="material_dynamic_surface_variant">#E7E0EC</color>
+    <color name="material_dynamic_on_surface_variant">#49454F</color>
+    <color name="material_dynamic_surface_container">#F3EDF7</color>
+    <color name="material_dynamic_surface_container_low">#F7F2FA</color>
+    <color name="material_dynamic_surface_container_high">#ECE6F0</color>
+    <color name="material_dynamic_surface_container_highest">#E6E0E9</color>
+    
+    <color name="material_dynamic_background">#FEF7FF</color>
+    <color name="material_dynamic_on_background">#1C1B1F</color>
+    
+    <color name="material_dynamic_outline">#79747E</color>
+    <color name="material_dynamic_outline_variant">#CAC4D0</color>
+
+    <!-- Legacy color mappings for backward compatibility -->
     <color name="colorPrimary">@color/material_dynamic_primary</color>
-    <color name="colorPrimaryDark">@color/material_dynamic_primary_dark</color>
+    <color name="colorPrimaryDark">@color/material_dynamic_primary_container</color>
     <color name="colorAccent">@color/material_dynamic_secondary</color>
 
     <!-- Surface/background/text colors -->
@@ -14,7 +51,7 @@
     <color name="colorOnSurface">@color/material_dynamic_on_surface</color>
     <color name="colorOnBackground">@color/material_dynamic_on_background</color>
     <color name="colorTextPrimary">@color/material_dynamic_on_surface</color>
-    <color name="colorTextSecondary">@color/material_dynamic_on_surface</color>
+    <color name="colorTextSecondary">@color/material_dynamic_on_surface_variant</color>
 
     <!-- Semantic colors, fallback to material palette for pre-12 -->
     <color name="material_blue_700">#1976D2</color>
@@ -27,9 +64,7 @@
 
     <!-- Status colors -->
     <color name="colorSuccess">@color/material_green_700</color>
-    <color name="colorError">@color/material_red_700</color>
+    <color name="colorError">@color/material_dynamic_error</color>
     <color name="colorWarning">@color/material_orange_700</color>
     <color name="colorInfo">@color/material_blue_700</color>
-
-
 </resources>
