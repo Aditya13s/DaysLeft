@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Background circle -->
+    <path
+        android:pathData="M60,60m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0"
+        android:fillColor="?android:attr/colorBackground" />
+
+    <!-- Calendar base -->
+    <path
+        android:pathData="M35,40h50c2.76,0 5,2.24 5,5v40c0,2.76 -2.24,5 -5,5H35c-2.76,0 -5,-2.24 -5,-5V45c0,-2.76 2.24,-5 5,-5z"
+        android:fillColor="?android:attr/colorBackground"
+        android:strokeColor="?attr/colorPrimary"
+        android:strokeWidth="1.5" />
+
+    <!-- Calendar header -->
+    <path
+        android:pathData="M30,45h60v12H30z"
+        android:fillColor="?attr/colorPrimary" />
+
+    <!-- Calendar binding rings -->
+    <circle
+        cx="43"
+        cy="37"
+        r="2"
+        android:fillColor="?android:attr/textColorSecondary" />
+    <circle
+        cx="60"
+        cy="37"
+        r="2"
+        android:fillColor="?android:attr/textColorSecondary" />
+    <circle
+        cx="77"
+        cy="37"
+        r="2"
+        android:fillColor="?android:attr/textColorSecondary" />
+
+    <!-- Calendar grid lines -->
+    <path
+        android:pathData="M35,65h50M35,72h50M35,79h50"
+        android:strokeColor="?android:attr/textColorSecondary"
+        android:strokeWidth="0.5" />
+
+    <path
+        android:pathData="M43,57v28M52,57v28M61,57v28M70,57v28M79,57v28"
+        android:strokeColor="?android:attr/textColorSecondary"
+        android:strokeWidth="0.5" />
+
+    <!-- Empty state dots pattern -->
+    <circle
+        cx="39"
+        cy="61"
+        r="1"
+        android:fillColor="?android:attr/textColorSecondary"
+        android:alpha="0.3" />
+    <circle
+        cx="48"
+        cy="61"
+        r="1"
+        android:fillColor="?android:attr/textColorSecondary"
+        android:alpha="0.3" />
+    <circle
+        cx="57"
+        cy="61"
+        r="1"
+        android:fillColor="?android:attr/textColorSecondary"
+        android:alpha="0.3" />
+
+    <circle
+        cx="39"
+        cy="68"
+        r="1"
+        android:fillColor="?android:attr/textColorSecondary"
+        android:alpha="0.3" />
+    <circle
+        cx="48"
+        cy="68"
+        r="1"
+        android:fillColor="?android:attr/textColorSecondary"
+        android:alpha="0.3" />
+
+    <circle
+        cx="57"
+        cy="75"
+        r="1"
+        android:fillColor="?android:attr/textColorSecondary"
+        android:alpha="0.3" />
+
+    <!-- Accent decoration - small plus icon to suggest adding -->
+    <path
+        android:pathData="M72,75h6M75,72v6"
+        android:strokeColor="?attr/colorPrimary"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>
