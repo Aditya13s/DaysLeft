@@ -1,6 +1,7 @@
 package com.aditya.daysleft.utils
 
 import java.util.concurrent.TimeUnit
+import java.util.Calendar
 
 object DaysLeftUtil {
     fun daysLeft(eventDateMillis: Long): Int {
@@ -25,8 +26,25 @@ object DaysLeftUtil {
     
     fun getRelativeDateText(eventDateMillis: Long): String {
         val currentMillis = System.currentTimeMillis()
-        val diff = eventDateMillis - currentMillis
-        val daysDiff = TimeUnit.MILLISECONDS.toDays(diff).toInt()
+        
+        // Get calendar instances for both dates
+        val currentCal = Calendar.getInstance().apply { 
+            timeInMillis = currentMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        
+        val eventCal = Calendar.getInstance().apply { 
+            timeInMillis = eventDateMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        
+        val daysDiff = ((eventCal.timeInMillis - currentCal.timeInMillis) / (24 * 60 * 60 * 1000)).toInt()
         
         return when (daysDiff) {
             -1 -> "YESTERDAY"
