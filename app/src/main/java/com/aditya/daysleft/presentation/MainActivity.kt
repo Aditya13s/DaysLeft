@@ -82,6 +82,13 @@ class MainActivity : AppCompatActivity() {
         // Always sort by Days Left, only setup Filter ChipGroup
         eventViewModel.setSortOption(SortOption.DAYS_LEFT)
         
+        // Add accessibility descriptions for filter chips
+        binding.chipAllEvents.contentDescription = "Show all events with sections"
+        binding.chipToday.contentDescription = "Show only today's events"
+        binding.chipUpcoming.contentDescription = "Show only upcoming events"
+        binding.chipPast.contentDescription = "Show only past events"
+        binding.chipNext7Days.contentDescription = "Show events in next 7 days"
+        
         // Set up chip selection listeners
         binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val filterOption = when {

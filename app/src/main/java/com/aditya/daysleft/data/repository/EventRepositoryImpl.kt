@@ -18,6 +18,7 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
         val liveData = MediatorLiveData<List<Event>>()
         
         // Get the appropriate source based on filter option
+        // Use consistent date-based filtering instead of timestamp-based for better UX
         val source = when (filterOption) {
             FilterOption.ALL -> {
                 when (sortOption) {
@@ -31,12 +32,14 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 dao.getEventsInDateRange(startOfToday, endOfToday)
             }
             FilterOption.UPCOMING -> {
-                val currentTime = System.currentTimeMillis()
-                dao.getEventsAfterDate(currentTime)
+                // Use start of tomorrow instead of current time for cleaner separation
+                val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)
+                dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive
             }
             FilterOption.PAST -> {
-                val currentTime = System.currentTimeMillis()
-                dao.getEventsBeforeDate(currentTime)
+                // Use start of today to exclude today's events from past
+                val startOfToday = DaysLeftUtil.getStartOfToday()
+                dao.getEventsBeforeDate(startOfToday)
             }
             FilterOption.NEXT_7_DAYS -> {
                 val (start, end) = DaysLeftUtil.getNext7DaysRange()
@@ -53,16 +56,10 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 )
             }
             
-            // Apply additional filtering if needed for UPCOMING filter (exclude today)
-            val filteredEvents = when (filterOption) {
-                FilterOption.UPCOMING -> events.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
-                else -> events
-            }
-            
             // Apply sorting if needed (especially for DAYS_LEFT which requires calculation)
             val sortedEvents = when (sortOption) {
-                SortOption.DATE -> filteredEvents.sortedBy { it.dateMillis }
-                SortOption.DAYS_LEFT -> filteredEvents.sortedBy { DaysLeftUtil.daysLeft(it.dateMillis) }
+                SortOption.DATE -> events.sortedBy { it.dateMillis }
+                SortOption.DAYS_LEFT -> events.sortedBy { DaysLeftUtil.daysLeft(it.dateMillis) }
             }
             
             liveData.value = sortedEvents

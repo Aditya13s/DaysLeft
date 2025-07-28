@@ -103,7 +103,7 @@ class EventAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(event: Event) {
             binding.textTitle.text = event.title
-            binding.textDate.text = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(
+            binding.textDate.text = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(
                 Date(event.dateMillis)
             )
             
@@ -130,6 +130,12 @@ class EventAdapter(
                     binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_upcoming_text))
                 }
             }
+            
+            // Enhanced accessibility
+            val eventDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(event.dateMillis))
+            binding.textTitle.contentDescription = "Event: ${event.title}"
+            binding.textDate.contentDescription = "Date: $eventDate"
+            binding.chipDaysLeft.contentDescription = "Time remaining: $daysText"
             
             binding.btnEdit.setOnClickListener { onEdit(event) }
             binding.btnDelete.setOnClickListener { onDelete(event) }

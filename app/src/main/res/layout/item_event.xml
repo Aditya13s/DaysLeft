@@ -3,25 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="3dp"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="1dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="12dp">
 
         <!-- Title and Days Left Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="6dp">
 
             <!-- Title: strong hierarchy, left aligned -->
             <TextView
@@ -35,9 +35,9 @@
                 android:maxLines="2"
                 android:text="Birthday Party"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:lineSpacingExtra="2dp" />
+                android:lineSpacingExtra="1dp" />
 
             <!-- Days Left Badge -->
             <com.google.android.material.chip.Chip
@@ -45,13 +45,13 @@
                 style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="8dp"
                 android:text="10 days left"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 app:chipBackgroundColor="?attr/colorPrimaryContainer"
-                app:chipCornerRadius="16dp"
-                app:chipMinHeight="32dp" />
+                app:chipCornerRadius="12dp"
+                app:chipMinHeight="28dp" />
         </LinearLayout>
 
         <!-- Date Row -->
@@ -64,8 +64,8 @@
             android:maxLines="1"
             android:text="Aug 14, 2025"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="16sp"
-            android:layout_marginBottom="12dp" />
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
 
         <!-- Action Buttons Row -->
         <LinearLayout
@@ -78,36 +78,36 @@
                 android:id="@+id/btnEdit"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
                 android:contentDescription="@string/edit_event"
                 android:minWidth="48dp"
-                android:minHeight="48dp"
+                android:minHeight="40dp"
                 android:text="@string/edit"
                 android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="12dp"
+                android:textSize="12sp"
+                app:cornerRadius="10dp"
                 app:icon="@drawable/ic_edit"
                 app:iconGravity="textStart"
-                app:iconSize="18dp"
-                app:iconPadding="8dp" />
+                app:iconSize="16dp"
+                app:iconPadding="6dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_height="40dp"
                 android:contentDescription="@string/delete_event"
                 android:minWidth="48dp"
-                android:minHeight="48dp"
+                android:minHeight="40dp"
                 android:text="@string/delete"
                 android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="12dp"
+                android:textSize="12sp"
+                app:cornerRadius="10dp"
                 app:icon="@drawable/ic_delete"
                 app:iconGravity="textStart"
-                app:iconSize="18dp"
-                app:iconPadding="8dp" />
+                app:iconSize="16dp"
+                app:iconPadding="6dp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

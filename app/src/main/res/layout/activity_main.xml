@@ -85,8 +85,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="4dp"
-        android:paddingBottom="80dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="72dp"
         android:clipToPadding="false"
         android:scrollbars="vertical"
         android:scrollbarStyle="outsideOverlay" />
