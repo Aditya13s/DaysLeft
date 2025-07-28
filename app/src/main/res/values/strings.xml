@@ -26,11 +26,9 @@
     <string name="cancel">Cancel</string>
 
     <!-- Sorting and Filtering -->
-    <string name="show">Show</string>
     <string name="filter_all_events">All Events</string>
     <string name="filter_next_7_days">Next 7 Days</string>
 
     <!-- Accessibility -->
     <string name="add_event">Add event</string>
-    <string name="filter_options">Filter options</string>
 </resources>

@@ -2,8 +2,6 @@ package com.aditya.daysleft.presentation
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -74,20 +72,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFilter() {
-        // Always sort by Days Left, only setup Filter Spinner
+        // Always sort by Days Left, only setup Filter ChipGroup
         eventViewModel.setSortOption(SortOption.DAYS_LEFT)
         
-        val filterOptions = FilterOption.values().map { it.displayName }
-        val filterAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, filterOptions)
-        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.filterSpinner.adapter = filterAdapter
-        
-        binding.filterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedFilterOption = FilterOption.values()[position]
-                eventViewModel.setFilterOption(selectedFilterOption)
+        // Set up chip selection listeners
+        binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            val filterOption = when {
+                checkedIds.contains(R.id.chipNext7Days) -> FilterOption.NEXT_7_DAYS
+                else -> FilterOption.ALL_EVENTS
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            eventViewModel.setFilterOption(filterOption)
         }
     }
 
