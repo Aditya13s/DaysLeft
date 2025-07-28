@@ -23,9 +23,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:importantForAccessibility="yes"/>
 
-    <!-- Sort and Filter Controls -->
+    <!-- Filter Control -->
     <LinearLayout
-        android:id="@+id/sortFilterContainer"
+        android:id="@+id/filterContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -40,33 +40,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sort_by"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginEnd="8dp" />
-
-        <Spinner
-            android:id="@+id/sortSpinner"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/ic_dropdown_background"
-            android:contentDescription="@string/sort_options" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/filter_by"
+            android:text="@string/show"
             android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:layout_marginEnd="8dp" />
 
         <Spinner
             android:id="@+id/filterSpinner"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:minWidth="120dp"
             android:background="@drawable/ic_dropdown_background"
             android:contentDescription="@string/filter_options" />
 
@@ -76,7 +59,7 @@
         android:id="@+id/eventRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/sortFilterContainer"
+        app:layout_constraintTop_toBottomOf="@id/filterContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

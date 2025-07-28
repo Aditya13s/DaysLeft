@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
         setupRecyclerView()
-        setupSpinners()
+        setupFilter()
         observeEvents()
         setupListeners()
     }
@@ -73,22 +73,10 @@ class MainActivity : AppCompatActivity() {
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
     }
 
-    private fun setupSpinners() {
-        // Setup Sort Spinner
-        val sortOptions = SortOption.values().map { it.displayName }
-        val sortAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, sortOptions)
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.sortSpinner.adapter = sortAdapter
+    private fun setupFilter() {
+        // Always sort by Days Left, only setup Filter Spinner
+        eventViewModel.setSortOption(SortOption.DAYS_LEFT)
         
-        binding.sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedSortOption = SortOption.values()[position]
-                eventViewModel.setSortOption(selectedSortOption)
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        // Setup Filter Spinner
         val filterOptions = FilterOption.values().map { it.displayName }
         val filterAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, filterOptions)
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
