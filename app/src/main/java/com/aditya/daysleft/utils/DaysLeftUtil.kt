@@ -22,4 +22,24 @@ object DaysLeftUtil {
         val diff = Math.abs(eventDateMillis - currentMillis)
         return TimeUnit.MILLISECONDS.toDays(diff).toInt()
     }
+    
+    fun getRelativeDateText(eventDateMillis: Long): String {
+        val currentMillis = System.currentTimeMillis()
+        val diff = eventDateMillis - currentMillis
+        val daysDiff = TimeUnit.MILLISECONDS.toDays(diff).toInt()
+        
+        return when (daysDiff) {
+            -1 -> "YESTERDAY"
+            0 -> "TODAY"
+            1 -> "TOMORROW"
+            else -> {
+                val absDays = Math.abs(daysDiff)
+                if (daysDiff < 0) {
+                    "$absDays days ago"
+                } else {
+                    "$absDays days left"
+                }
+            }
+        }
+    }
 }

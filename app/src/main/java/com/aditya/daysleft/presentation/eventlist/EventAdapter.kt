@@ -64,13 +64,8 @@ class EventAdapter(
                 Date(event.dateMillis)
             )
             
-            // Update days text based on whether event is past or upcoming
-            val daysSinceOrUntil = DaysLeftUtil.daysSinceOrUntil(event.dateMillis)
-            binding.textDaysLeft.text = if (DaysLeftUtil.isPastEvent(event.dateMillis)) {
-                if (daysSinceOrUntil == 0) "Today" else "$daysSinceOrUntil days ago"
-            } else {
-                if (daysSinceOrUntil == 0) "Today" else "$daysSinceOrUntil days left"
-            }
+            // Update days text with relative formatting
+            binding.textDaysLeft.text = DaysLeftUtil.getRelativeDateText(event.dateMillis)
             
             binding.btnEdit.setOnClickListener { onEdit(event) }
             binding.btnDelete.setOnClickListener { onDelete(event) }
