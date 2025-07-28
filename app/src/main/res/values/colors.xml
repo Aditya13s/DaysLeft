@@ -46,7 +46,6 @@
 
     <!-- Surface/background/text colors -->
     <color name="colorSurface">@color/material_dynamic_surface</color>
-    <color name="colorBackground">@color/material_dynamic_background</color>
     <color name="colorOnPrimary">@color/material_dynamic_on_primary</color>
     <color name="colorOnSurface">@color/material_dynamic_on_surface</color>
     <color name="colorOnBackground">@color/material_dynamic_on_background</color>

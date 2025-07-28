@@ -31,7 +31,7 @@
         <item name="colorSurfaceContainerHigh">@color/material_dynamic_surface_container_high</item>
         <item name="colorSurfaceContainerHighest">@color/material_dynamic_surface_container_highest</item>
         
-        <item name="colorBackground">@color/material_dynamic_background</item>
+        <item name="android:colorBackground">@color/material_dynamic_background</item>
         <item name="colorOnBackground">@color/material_dynamic_on_background</item>
         
         <item name="colorOutline">@color/material_dynamic_outline</item>
