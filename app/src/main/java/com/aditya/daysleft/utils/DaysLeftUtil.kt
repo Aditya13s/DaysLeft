@@ -11,11 +11,13 @@ object DaysLeftUtil {
     }
     
     fun isPastEvent(eventDateMillis: Long): Boolean {
-        return eventDateMillis < System.currentTimeMillis()
+        // Use calendar day boundaries instead of current timestamp to prevent overlap
+        return eventDateMillis < getStartOfToday()
     }
     
     fun isUpcomingEvent(eventDateMillis: Long): Boolean {
-        return eventDateMillis >= System.currentTimeMillis()
+        // Use calendar day boundaries for consistency
+        return eventDateMillis >= getStartOfToday() + (24 * 60 * 60 * 1000) // Start of tomorrow
     }
     
     fun isTodayEvent(eventDateMillis: Long): Boolean {

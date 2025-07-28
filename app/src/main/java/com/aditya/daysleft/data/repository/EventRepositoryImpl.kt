@@ -32,9 +32,9 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 dao.getEventsInDateRange(startOfToday, endOfToday)
             }
             FilterOption.UPCOMING -> {
-                // Use start of tomorrow instead of current time for cleaner separation
+                // Get events starting from tomorrow (start of tomorrow)
                 val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)
-                dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive
+                dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive of startOfTomorrow
             }
             FilterOption.PAST -> {
                 // Use start of today to exclude today's events from past
