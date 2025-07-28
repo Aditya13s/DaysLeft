@@ -51,8 +51,7 @@
                 android:textStyle="bold"
                 app:chipBackgroundColor="?attr/colorPrimaryContainer"
                 app:chipCornerRadius="16dp"
-                app:chipMinHeight="32dp"
-                app:textColor="?attr/colorOnPrimaryContainer" />
+                app:chipMinHeight="32dp" />
         </LinearLayout>
 
         <!-- Date Row -->
