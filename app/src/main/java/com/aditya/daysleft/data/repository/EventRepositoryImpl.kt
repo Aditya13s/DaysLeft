@@ -11,7 +11,7 @@ import com.aditya.daysleft.utils.DaysLeftUtil
 
 class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
     override fun getEvents(): LiveData<List<Event>> {
-        return getEvents(SortOption.DATE, FilterOption.ALL)
+        return getEvents(SortOption.DAYS_LEFT, FilterOption.ALL)
     }
     
     override fun getEvents(sortOption: SortOption, filterOption: FilterOption): LiveData<List<Event>> {
@@ -22,16 +22,11 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
             FilterOption.ALL -> {
                 when (sortOption) {
                     SortOption.DATE -> dao.getEventsSortedByDate()
-                    SortOption.ALPHABETICAL -> dao.getEventsSortedAlphabetically() 
                     SortOption.DAYS_LEFT -> dao.getEventsSortedByDate() // We'll sort by days left in memory
                 }
             }
             FilterOption.NEXT_7_DAYS -> {
                 val (start, end) = DaysLeftUtil.getNext7DaysRange()
-                dao.getEventsInDateRange(start, end)
-            }
-            FilterOption.THIS_MONTH -> {
-                val (start, end) = DaysLeftUtil.getThisMonthRange()
                 dao.getEventsInDateRange(start, end)
             }
         }
@@ -48,7 +43,6 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
             // Apply sorting if needed (especially for DAYS_LEFT which requires calculation)
             val sortedEvents = when (sortOption) {
                 SortOption.DATE -> events.sortedBy { it.dateMillis }
-                SortOption.ALPHABETICAL -> events.sortedBy { it.title.lowercase() }
                 SortOption.DAYS_LEFT -> events.sortedBy { DaysLeftUtil.daysLeft(it.dateMillis) }
             }
             
