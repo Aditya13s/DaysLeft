@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val filterOption = when {
                 checkedIds.contains(R.id.chipNext7Days) -> FilterOption.NEXT_7_DAYS
-                else -> FilterOption.ALL_EVENTS
+                else -> FilterOption.ALL
             }
             eventViewModel.setFilterOption(filterOption)
         }
