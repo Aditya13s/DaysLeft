@@ -24,4 +24,12 @@ interface EventDao {
 
     @Query("SELECT * FROM events ORDER BY dateMillis ASC")
     fun getEvents() : LiveData<List<EventEntity>>
+    
+    // Sorting queries
+    @Query("SELECT * FROM events ORDER BY dateMillis ASC")
+    fun getEventsSortedByDate() : LiveData<List<EventEntity>>
+    
+    // Filter queries
+    @Query("SELECT * FROM events WHERE dateMillis BETWEEN :startMillis AND :endMillis ORDER BY dateMillis ASC")
+    fun getEventsInDateRange(startMillis: Long, endMillis: Long) : LiveData<List<EventEntity>>
 }

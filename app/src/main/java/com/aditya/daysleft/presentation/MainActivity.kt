@@ -13,6 +13,8 @@ import com.aditya.daysleft.data.local.AppDatabase
 import com.aditya.daysleft.data.repository.EventRepositoryImpl
 import com.aditya.daysleft.databinding.ActivityMainBinding
 import com.aditya.daysleft.domain.model.Event
+import com.aditya.daysleft.domain.model.SortOption
+import com.aditya.daysleft.domain.model.FilterOption
 import com.aditya.daysleft.domain.usecases.AddEvent
 import com.aditya.daysleft.domain.usecases.DeleteEvent
 import com.aditya.daysleft.domain.usecases.EventUseCases
@@ -44,9 +46,9 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
         setupRecyclerView()
+        setupFilter()
         observeEvents()
         setupListeners()
-
     }
 
     private fun observeEvents() {
@@ -67,6 +69,20 @@ class MainActivity : AppCompatActivity() {
         )
         val factory = EventViewModelFactory(application, eventUseCases)
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
+    }
+
+    private fun setupFilter() {
+        // Always sort by Days Left, only setup Filter ChipGroup
+        eventViewModel.setSortOption(SortOption.DAYS_LEFT)
+        
+        // Set up chip selection listeners
+        binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            val filterOption = when {
+                checkedIds.contains(R.id.chipNext7Days) -> FilterOption.NEXT_7_DAYS
+                else -> FilterOption.ALL
+            }
+            eventViewModel.setFilterOption(filterOption)
+        }
     }
 
     private fun setupListeners() {

@@ -2,10 +2,14 @@ package com.aditya.daysleft.domain.usecases
 
 import com.aditya.daysleft.data.repository.EventRepository
 import com.aditya.daysleft.domain.model.Event
+import com.aditya.daysleft.domain.model.SortOption
+import com.aditya.daysleft.domain.model.FilterOption
 
 
 class GetEvents(private val repo: EventRepository) {
     operator fun invoke() = repo.getEvents()
+    operator fun invoke(sortOption: SortOption, filterOption: FilterOption) = 
+        repo.getEvents(sortOption, filterOption)
 }
 
 class AddEvent(private val repo: EventRepository) {

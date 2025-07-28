@@ -57,4 +57,38 @@ class DaysLeftUtilTest {
         val oneWeekFromNowMillis = getDateMillis(7)
         assertEquals("7 days left", DaysLeftUtil.getRelativeDateText(oneWeekFromNowMillis))
     }
+    
+    @Test
+    fun getNext7DaysRange_returnsCorrectRange() {
+        val (start, end) = DaysLeftUtil.getNext7DaysRange()
+        val startOfToday = DaysLeftUtil.getStartOfToday()
+        
+        // Start should be start of today
+        assertEquals(startOfToday, start)
+        
+        // End should be 7 days from start of today (end of day 7)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = startOfToday
+        calendar.add(Calendar.DAY_OF_YEAR, 7)
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        
+        assertEquals(calendar.timeInMillis, end)
+    }
+    
+    @Test
+    fun daysLeft_futureDate_returnsPositiveValue() {
+        val futureMillis = getDateMillis(5)
+        val days = DaysLeftUtil.daysLeft(futureMillis)
+        assertTrue("Days left should be positive for future events", days >= 0)
+    }
+    
+    @Test
+    fun daysLeft_pastDate_returnsNegativeValue() {
+        val pastMillis = getDateMillis(-5)
+        val days = DaysLeftUtil.daysLeft(pastMillis)
+        assertTrue("Days left should be negative for past events", days < 0)
+    }
 }
