@@ -78,6 +78,8 @@ class MainActivity : AppCompatActivity() {
         // Set up chip selection listeners
         binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val filterOption = when {
+                checkedIds.contains(R.id.chipToday) -> FilterOption.TODAY
+                checkedIds.contains(R.id.chipUpcoming) -> FilterOption.UPCOMING
                 checkedIds.contains(R.id.chipNext7Days) -> FilterOption.NEXT_7_DAYS
                 else -> FilterOption.ALL
             }

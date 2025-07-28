@@ -3,85 +3,85 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <!-- Title: strong hierarchy, left aligned -->
-        <TextView
-            android:id="@+id/textTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:importantForAccessibility="yes"
-            android:maxLines="1"
-            android:paddingBottom="2dp"
-            android:text="Birthday Party"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <!-- Date and Days Left: use horizontal arrangement for clarity -->
+        <!-- Title and Days Left Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="2dp"
-            android:paddingBottom="8dp">
+            android:layout_marginBottom="12dp">
 
+            <!-- Title: strong hierarchy, left aligned -->
             <TextView
-                android:id="@+id/textDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:importantForAccessibility="yes"
-                android:maxLines="1"
-                android:text="Aug 14, 2025"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="14sp" />
-
-            <Space
+                android:id="@+id/textTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="start"
+                android:importantForAccessibility="yes"
+                android:maxLines="2"
+                android:text="Birthday Party"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:lineSpacingExtra="2dp" />
 
-            <TextView
-                android:id="@+id/textDaysLeft"
+            <!-- Days Left Badge -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDaysLeft"
+                style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:importantForAccessibility="yes"
-                android:maxLines="1"
+                android:layout_marginStart="12dp"
                 android:text="10 days left"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:chipBackgroundColor="?attr/colorPrimaryContainer"
+                app:chipCornerRadius="16dp"
+                app:chipMinHeight="32dp"
+                app:textColor="?attr/colorOnPrimaryContainer" />
         </LinearLayout>
 
-        <!-- Actions: visually minimal, clear emphasis hierarchy -->
+        <!-- Date Row -->
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:importantForAccessibility="yes"
+            android:maxLines="1"
+            android:text="Aug 14, 2025"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Action Buttons Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:paddingTop="8dp">
+            android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:layout_marginEnd="12dp"
-    android:contentDescription="@string/edit_event"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/edit_event"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
                 android:text="@string/edit"
@@ -98,7 +98,7 @@
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-    android:contentDescription="@string/delete_event"
+                android:contentDescription="@string/delete_event"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
                 android:text="@string/delete"

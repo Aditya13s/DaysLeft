@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="24dp"
-    android:paddingBottom="8dp"
+    android:paddingTop="32dp"
+    android:paddingBottom="12dp"
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
@@ -13,11 +13,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="UPCOMING"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         android:textColor="?attr/colorPrimary"
         android:textStyle="bold"
-        android:letterSpacing="0.1"
+        android:letterSpacing="0.05"
         android:importantForAccessibility="yes"
-        android:gravity="start" />
+        android:gravity="start"
+        android:paddingBottom="4dp" />
+
+    <!-- Subtle divider line -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="3dp"
+        android:background="?attr/colorPrimary"
+        android:alpha="0.6" />
 
 </LinearLayout>

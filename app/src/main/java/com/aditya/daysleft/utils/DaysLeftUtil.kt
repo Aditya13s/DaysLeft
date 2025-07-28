@@ -18,6 +18,16 @@ object DaysLeftUtil {
         return eventDateMillis >= System.currentTimeMillis()
     }
     
+    fun isTodayEvent(eventDateMillis: Long): Boolean {
+        val startOfToday = getStartOfToday()
+        val endOfToday = getEndOfToday()
+        return eventDateMillis >= startOfToday && eventDateMillis <= endOfToday
+    }
+    
+    fun isUpcomingButNotToday(eventDateMillis: Long): Boolean {
+        return isUpcomingEvent(eventDateMillis) && !isTodayEvent(eventDateMillis)
+    }
+    
     fun daysSinceOrUntil(eventDateMillis: Long): Int {
         val currentMillis = System.currentTimeMillis()
         val diff = Math.abs(eventDateMillis - currentMillis)

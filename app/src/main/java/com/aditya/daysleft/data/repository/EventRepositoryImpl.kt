@@ -25,6 +25,19 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                     SortOption.DAYS_LEFT -> dao.getEventsSortedByDate() // We'll sort by days left in memory
                 }
             }
+            FilterOption.TODAY -> {
+                val startOfToday = DaysLeftUtil.getStartOfToday()
+                val endOfToday = DaysLeftUtil.getEndOfToday()
+                dao.getEventsInDateRange(startOfToday, endOfToday)
+            }
+            FilterOption.UPCOMING -> {
+                val currentTime = System.currentTimeMillis()
+                dao.getEventsAfterDate(currentTime)
+            }
+            FilterOption.PAST -> {
+                val currentTime = System.currentTimeMillis()
+                dao.getEventsBeforeDate(currentTime)
+            }
             FilterOption.NEXT_7_DAYS -> {
                 val (start, end) = DaysLeftUtil.getNext7DaysRange()
                 dao.getEventsInDateRange(start, end)
@@ -40,10 +53,16 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 )
             }
             
+            // Apply additional filtering if needed for UPCOMING filter (exclude today)
+            val filteredEvents = when (filterOption) {
+                FilterOption.UPCOMING -> events.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
+                else -> events
+            }
+            
             // Apply sorting if needed (especially for DAYS_LEFT which requires calculation)
             val sortedEvents = when (sortOption) {
-                SortOption.DATE -> events.sortedBy { it.dateMillis }
-                SortOption.DAYS_LEFT -> events.sortedBy { DaysLeftUtil.daysLeft(it.dateMillis) }
+                SortOption.DATE -> filteredEvents.sortedBy { it.dateMillis }
+                SortOption.DAYS_LEFT -> filteredEvents.sortedBy { DaysLeftUtil.daysLeft(it.dateMillis) }
             }
             
             liveData.value = sortedEvents

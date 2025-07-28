@@ -32,10 +32,19 @@ class EventAdapter(
         if (events.isEmpty()) return emptyList()
         
         val sortedEvents = events.sortedBy { it.dateMillis }
-        val upcomingEvents = sortedEvents.filter { DaysLeftUtil.isUpcomingEvent(it.dateMillis) }
+        val todayEvents = sortedEvents.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
+        val upcomingEvents = sortedEvents.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
         val pastEvents = sortedEvents.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
         
         val listItems = mutableListOf<EventListItem>()
+        
+        // Add today events section
+        if (todayEvents.isNotEmpty()) {
+            listItems.add(EventListItem.SectionHeader(EventSection.TODAY.title))
+            todayEvents.forEach { event ->
+                listItems.add(EventListItem.EventItem(event))
+            }
+        }
         
         // Add upcoming events section
         if (upcomingEvents.isNotEmpty()) {
@@ -64,8 +73,25 @@ class EventAdapter(
                 Date(event.dateMillis)
             )
             
-            // Update days text with relative formatting
-            binding.textDaysLeft.text = DaysLeftUtil.getRelativeDateText(event.dateMillis)
+            // Update days text with relative formatting for the chip
+            val daysText = DaysLeftUtil.getRelativeDateText(event.dateMillis)
+            binding.chipDaysLeft.text = daysText
+            
+            // Set chip color based on urgency - using color state list for better theming
+            when {
+                DaysLeftUtil.isTodayEvent(event.dateMillis) -> {
+                    // Today events - use primary color for emphasis
+                    binding.chipDaysLeft.chipBackgroundColor = null // Use default theme color
+                }
+                DaysLeftUtil.isPastEvent(event.dateMillis) -> {
+                    // Past events - use surface variant for muted appearance
+                    binding.chipDaysLeft.chipBackgroundColor = null // Use default theme color
+                }
+                else -> {
+                    // Future events - use primary container color
+                    binding.chipDaysLeft.chipBackgroundColor = null // Use default theme color
+                }
+            }
             
             binding.btnEdit.setOnClickListener { onEdit(event) }
             binding.btnDelete.setOnClickListener { onDelete(event) }

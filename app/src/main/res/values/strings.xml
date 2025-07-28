@@ -27,6 +27,8 @@
 
     <!-- Sorting and Filtering -->
     <string name="filter_all_events">All Events</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_upcoming">Upcoming</string>
     <string name="filter_next_7_days">Next 7 Days</string>
 
     <!-- Accessibility -->

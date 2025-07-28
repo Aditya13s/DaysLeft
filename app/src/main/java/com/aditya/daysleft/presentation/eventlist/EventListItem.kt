@@ -8,6 +8,7 @@ sealed class EventListItem {
 }
 
 enum class EventSection(val title: String) {
+    TODAY("TODAY"),
     UPCOMING("UPCOMING"),
     PAST("PAST")
 }
