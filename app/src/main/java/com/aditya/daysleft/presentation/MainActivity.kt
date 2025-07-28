@@ -2,6 +2,8 @@ package com.aditya.daysleft.presentation
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,6 +15,8 @@ import com.aditya.daysleft.data.local.AppDatabase
 import com.aditya.daysleft.data.repository.EventRepositoryImpl
 import com.aditya.daysleft.databinding.ActivityMainBinding
 import com.aditya.daysleft.domain.model.Event
+import com.aditya.daysleft.domain.model.SortOption
+import com.aditya.daysleft.domain.model.FilterOption
 import com.aditya.daysleft.domain.usecases.AddEvent
 import com.aditya.daysleft.domain.usecases.DeleteEvent
 import com.aditya.daysleft.domain.usecases.EventUseCases
@@ -44,9 +48,9 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
         setupRecyclerView()
+        setupSpinners()
         observeEvents()
         setupListeners()
-
     }
 
     private fun observeEvents() {
@@ -67,6 +71,36 @@ class MainActivity : AppCompatActivity() {
         )
         val factory = EventViewModelFactory(application, eventUseCases)
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
+    }
+
+    private fun setupSpinners() {
+        // Setup Sort Spinner
+        val sortOptions = SortOption.values().map { it.displayName }
+        val sortAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, sortOptions)
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.sortSpinner.adapter = sortAdapter
+        
+        binding.sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedSortOption = SortOption.values()[position]
+                eventViewModel.setSortOption(selectedSortOption)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        // Setup Filter Spinner
+        val filterOptions = FilterOption.values().map { it.displayName }
+        val filterAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, filterOptions)
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.filterSpinner.adapter = filterAdapter
+        
+        binding.filterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedFilterOption = FilterOption.values()[position]
+                eventViewModel.setFilterOption(selectedFilterOption)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun setupListeners() {

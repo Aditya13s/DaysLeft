@@ -60,4 +60,68 @@ object DaysLeftUtil {
             }
         }
     }
+    
+    /**
+     * Get the start of today (00:00:00)
+     */
+    fun getStartOfToday(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.timeInMillis
+    }
+    
+    /**
+     * Get the end of today (23:59:59)
+     */
+    fun getEndOfToday(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        return calendar.timeInMillis
+    }
+    
+    /**
+     * Get the timestamp for 7 days from now (end of day)
+     */
+    fun getNext7DaysRange(): Pair<Long, Long> {
+        val startOfToday = getStartOfToday()
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = startOfToday
+        calendar.add(Calendar.DAY_OF_YEAR, 7)
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        return Pair(startOfToday, calendar.timeInMillis)
+    }
+    
+    /**
+     * Get the start and end of current month
+     */
+    fun getThisMonthRange(): Pair<Long, Long> {
+        val calendar = Calendar.getInstance()
+        
+        // Start of month
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val startOfMonth = calendar.timeInMillis
+        
+        // End of month
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        val endOfMonth = calendar.timeInMillis
+        
+        return Pair(startOfMonth, endOfMonth)
+    }
 }
