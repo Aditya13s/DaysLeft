@@ -24,6 +24,7 @@ import com.aditya.daysleft.presentation.addevent.AddEditEventBottomSheet
 import com.aditya.daysleft.presentation.eventlist.EventAdapter
 import com.aditya.daysleft.presentation.viewmodel.EventViewModel
 import com.aditya.daysleft.presentation.viewmodel.EventViewModelFactory
+import com.aditya.daysleft.utils.DaysLeftUtil
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -47,21 +48,52 @@ class MainActivity : AppCompatActivity() {
         setupViewModel()
         setupRecyclerView()
         setupFilter()
+        setupDashboard()
         observeEvents()
         setupListeners()
     }
 
     private fun observeEvents() {
         eventViewModel.events.observe(this) { events ->
+            updateDashboard(events)
             val currentFilter = eventViewModel.filterOption.value ?: FilterOption.ALL
             adapter.submitList(events, currentFilter)
-            updateEmptyState(events)
+            updateEmptyState(events, currentFilter)
         }
         
         // Also observe filter changes to update the adapter
         eventViewModel.filterOption.observe(this) { filterOption ->
             val currentEvents = eventViewModel.events.value ?: emptyList()
             adapter.submitList(currentEvents, filterOption)
+            updateEmptyState(currentEvents, filterOption)
+        }
+    }
+
+    private fun updateDashboard(events: List<Event>) {
+        val todayCount = events.count { DaysLeftUtil.isTodayEvent(it.dateMillis) }
+        val upcomingCount = events.count { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
+        val pastCount = events.count { DaysLeftUtil.isPastEvent(it.dateMillis) }
+        
+        binding.textTodayCount.text = todayCount.toString()
+        binding.textUpcomingCount.text = upcomingCount.toString()
+        binding.textPastCount.text = pastCount.toString()
+    }
+
+    private fun setupDashboard() {
+        // Add click listeners for dashboard cards
+        binding.cardToday.setOnClickListener {
+            binding.chipToday.isChecked = true
+            eventViewModel.setFilterOption(FilterOption.TODAY)
+        }
+        
+        binding.cardUpcoming.setOnClickListener {
+            binding.chipUpcoming.isChecked = true
+            eventViewModel.setFilterOption(FilterOption.UPCOMING)
+        }
+        
+        binding.cardPast.setOnClickListener {
+            binding.chipPast.isChecked = true
+            eventViewModel.setFilterOption(FilterOption.PAST)
         }
     }
 
@@ -79,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFilter() {
-        // Always sort by Days Left, only setup Filter ChipGroup
+        // Always sort by Days Left
         eventViewModel.setSortOption(SortOption.DAYS_LEFT)
         
         // Add accessibility descriptions for filter chips
@@ -87,7 +119,6 @@ class MainActivity : AppCompatActivity() {
         binding.chipToday.contentDescription = "Show only today's events"
         binding.chipUpcoming.contentDescription = "Show only upcoming events"
         binding.chipPast.contentDescription = "Show only past events"
-        binding.chipNext7Days.contentDescription = "Show events in next 7 days"
         
         // Set up chip selection listeners
         binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
@@ -95,7 +126,6 @@ class MainActivity : AppCompatActivity() {
                 checkedIds.contains(R.id.chipToday) -> FilterOption.TODAY
                 checkedIds.contains(R.id.chipUpcoming) -> FilterOption.UPCOMING
                 checkedIds.contains(R.id.chipPast) -> FilterOption.PAST
-                checkedIds.contains(R.id.chipNext7Days) -> FilterOption.NEXT_7_DAYS
                 else -> FilterOption.ALL
             }
             eventViewModel.setFilterOption(filterOption)
@@ -131,9 +161,28 @@ class MainActivity : AppCompatActivity() {
             .show(supportFragmentManager, "EditEventBottomSheet")
     }
 
-    private fun updateEmptyState(events: List<Event>?) {
-        val isEmpty = events.isNullOrEmpty()
+    private fun updateEmptyState(events: List<Event>, filterOption: FilterOption) {
+        val filteredEvents = when (filterOption) {
+            FilterOption.TODAY -> events.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
+            FilterOption.UPCOMING -> events.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
+            FilterOption.PAST -> events.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
+            FilterOption.ALL -> events
+            else -> events
+        }
+        
+        val isEmpty = filteredEvents.isEmpty()
         binding.emptyStateContainer.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.eventRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        
+        // Update empty state text based on filter
+        if (isEmpty) {
+            val emptyText = when (filterOption) {
+                FilterOption.TODAY -> "No events scheduled for today"
+                FilterOption.UPCOMING -> "No upcoming events"
+                FilterOption.PAST -> "No past events"
+                else -> getString(R.string.empty_events_title)
+            }
+            binding.textEmpty.text = emptyText
+        }
     }
 }
