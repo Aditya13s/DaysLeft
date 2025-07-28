@@ -24,19 +24,19 @@
     
     <!-- Calendar binding rings -->
     <circle
-        android:cx="43"
-        android:cy="37"
-        android:r="2"
+        cx="43"
+        cy="37"
+        r="2"
         android:fillColor="?android:attr/textColorSecondary" />
     <circle
-        android:cx="60"
-        android:cy="37"
-        android:r="2"
+        cx="60"
+        cy="37"
+        r="2"
         android:fillColor="?android:attr/textColorSecondary" />
     <circle
-        android:cx="77"
-        android:cy="37"
-        android:r="2"
+        cx="77"
+        cy="37"
+        r="2"
         android:fillColor="?android:attr/textColorSecondary" />
     
     <!-- Calendar grid lines -->
@@ -52,41 +52,41 @@
     
     <!-- Empty state dots pattern -->
     <circle
-        android:cx="39"
-        android:cy="61"
-        android:r="1"
+        cx="39"
+        cy="61"
+        r="1"
         android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     <circle
-        android:cx="48"
-        android:cy="61"
-        android:r="1"
+        cx="48"
+        cy="61"
+        r="1"
         android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     <circle
-        android:cx="57"
-        android:cy="61"
-        android:r="1"
+        cx="57"
+        cy="61"
+        r="1"
         android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
-    
+
     <circle
-        android:cx="39"
-        android:cy="68"
-        android:r="1"
+        cx="39"
+        cy="68"
+        r="1"
         android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     <circle
-        android:cx="48"
-        android:cy="68"
-        android:r="1"
+        cx="48"
+        cy="68"
+        r="1"
         android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
-    
+
     <circle
-        android:cx="57"
-        android:cy="75"
-        android:r="1"
+        cx="57"
+        cy="75"
+        r="1"
         android:fillColor="?android:attr/textColorSecondary"
         android:alpha="0.3" />
     
