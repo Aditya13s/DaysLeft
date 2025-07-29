@@ -18,12 +18,28 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
         val liveData = MediatorLiveData<List<Event>>()
         
         // Get the appropriate source based on filter option
+        // Use consistent date-based filtering instead of timestamp-based for better UX
         val source = when (filterOption) {
             FilterOption.ALL -> {
                 when (sortOption) {
                     SortOption.DATE -> dao.getEventsSortedByDate()
                     SortOption.DAYS_LEFT -> dao.getEventsSortedByDate() // We'll sort by days left in memory
                 }
+            }
+            FilterOption.TODAY -> {
+                val startOfToday = DaysLeftUtil.getStartOfToday()
+                val endOfToday = DaysLeftUtil.getEndOfToday()
+                dao.getEventsInDateRange(startOfToday, endOfToday)
+            }
+            FilterOption.UPCOMING -> {
+                // Get events starting from tomorrow (start of tomorrow)
+                val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)
+                dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive of startOfTomorrow
+            }
+            FilterOption.PAST -> {
+                // Use start of today to exclude today's events from past
+                val startOfToday = DaysLeftUtil.getStartOfToday()
+                dao.getEventsBeforeDate(startOfToday)
             }
             FilterOption.NEXT_7_DAYS -> {
                 val (start, end) = DaysLeftUtil.getNext7DaysRange()

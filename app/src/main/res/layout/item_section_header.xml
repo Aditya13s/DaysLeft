@@ -3,21 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="24dp"
-    android:paddingBottom="8dp"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp">
+    android:paddingTop="16dp"
+    android:paddingBottom="6dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
     <TextView
         android:id="@+id/textSectionHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="UPCOMING"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         android:textColor="?attr/colorPrimary"
         android:textStyle="bold"
-        android:letterSpacing="0.1"
+        android:letterSpacing="0.05"
         android:importantForAccessibility="yes"
-        android:gravity="start" />
+        android:gravity="start"
+        android:paddingBottom="3dp" />
+
+    <!-- Subtle divider line -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="2dp"
+        android:background="?attr/colorPrimary"
+        android:alpha="0.6" />
 
 </LinearLayout>

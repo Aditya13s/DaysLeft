@@ -91,4 +91,100 @@ class DaysLeftUtilTest {
         val days = DaysLeftUtil.daysLeft(pastMillis)
         assertTrue("Days left should be negative for past events", days < 0)
     }
+    
+    @Test
+    fun isTodayEvent_todayEvent_returnsTrue() {
+        val todayMillis = getDateMillis(0)
+        assertTrue("Today event should return true", DaysLeftUtil.isTodayEvent(todayMillis))
+    }
+    
+    @Test
+    fun isTodayEvent_yesterdayEvent_returnsFalse() {
+        val yesterdayMillis = getDateMillis(-1)
+        assertFalse("Yesterday event should return false", DaysLeftUtil.isTodayEvent(yesterdayMillis))
+    }
+    
+    @Test
+    fun isTodayEvent_tomorrowEvent_returnsFalse() {
+        val tomorrowMillis = getDateMillis(1)
+        assertFalse("Tomorrow event should return false", DaysLeftUtil.isTodayEvent(tomorrowMillis))
+    }
+    
+    @Test
+    fun isPastEvent_yesterdayEvent_returnsTrue() {
+        val yesterdayMillis = getDateMillis(-1)
+        assertTrue("Yesterday event should be past", DaysLeftUtil.isPastEvent(yesterdayMillis))
+    }
+    
+    @Test
+    fun isPastEvent_todayEvent_returnsFalse() {
+        val todayMillis = getDateMillis(0)
+        assertFalse("Today event should not be past", DaysLeftUtil.isPastEvent(todayMillis))
+    }
+    
+    @Test
+    fun isPastEvent_tomorrowEvent_returnsFalse() {
+        val tomorrowMillis = getDateMillis(1)
+        assertFalse("Tomorrow event should not be past", DaysLeftUtil.isPastEvent(tomorrowMillis))
+    }
+    
+    @Test
+    fun isUpcomingEvent_tomorrowEvent_returnsTrue() {
+        val tomorrowMillis = getDateMillis(1)
+        assertTrue("Tomorrow event should be upcoming", DaysLeftUtil.isUpcomingEvent(tomorrowMillis))
+    }
+    
+    @Test
+    fun isUpcomingEvent_todayEvent_returnsFalse() {
+        val todayMillis = getDateMillis(0)
+        assertFalse("Today event should not be upcoming", DaysLeftUtil.isUpcomingEvent(todayMillis))
+    }
+    
+    @Test
+    fun isUpcomingEvent_yesterdayEvent_returnsFalse() {
+        val yesterdayMillis = getDateMillis(-1)
+        assertFalse("Yesterday event should not be upcoming", DaysLeftUtil.isUpcomingEvent(yesterdayMillis))
+    }
+    
+    @Test
+    fun isUpcomingButNotToday_tomorrowEvent_returnsTrue() {
+        val tomorrowMillis = getDateMillis(1)
+        assertTrue("Tomorrow event should be upcoming but not today", DaysLeftUtil.isUpcomingButNotToday(tomorrowMillis))
+    }
+    
+    @Test
+    fun isUpcomingButNotToday_todayEvent_returnsFalse() {
+        val todayMillis = getDateMillis(0)
+        assertFalse("Today event should not be upcoming but not today", DaysLeftUtil.isUpcomingButNotToday(todayMillis))
+    }
+    
+    @Test
+    fun filteringConsistency_noOverlapBetweenTodayAndPast() {
+        val todayMillis = getDateMillis(0)
+        
+        // Today event should be TODAY but not PAST
+        assertTrue("Today event should be today", DaysLeftUtil.isTodayEvent(todayMillis))
+        assertFalse("Today event should not be past", DaysLeftUtil.isPastEvent(todayMillis))
+        assertFalse("Today event should not be upcoming", DaysLeftUtil.isUpcomingEvent(todayMillis))
+    }
+    
+    @Test
+    fun filteringConsistency_pastEventNotToday() {
+        val pastMillis = getDateMillis(-1)
+        
+        // Past event should be PAST but not TODAY
+        assertTrue("Past event should be past", DaysLeftUtil.isPastEvent(pastMillis))
+        assertFalse("Past event should not be today", DaysLeftUtil.isTodayEvent(pastMillis))
+        assertFalse("Past event should not be upcoming", DaysLeftUtil.isUpcomingEvent(pastMillis))
+    }
+    
+    @Test
+    fun filteringConsistency_upcomingEventNotToday() {
+        val futureMillis = getDateMillis(1)
+        
+        // Future event should be UPCOMING but not TODAY
+        assertTrue("Future event should be upcoming", DaysLeftUtil.isUpcomingEvent(futureMillis))
+        assertFalse("Future event should not be today", DaysLeftUtil.isTodayEvent(futureMillis))
+        assertFalse("Future event should not be past", DaysLeftUtil.isPastEvent(futureMillis))
+    }
 }
