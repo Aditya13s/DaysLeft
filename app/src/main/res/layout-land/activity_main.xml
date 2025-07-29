@@ -8,62 +8,82 @@
     android:background="?attr/colorSurface"
     tools:context=".presentation.MainActivity">
 
-    <!-- Simplified Header for landscape -->
-    <LinearLayout
-        android:id="@+id/headerContainer"
+    <!-- Enhanced Material 3 Header for landscape -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:gravity="center_vertical"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/textMainTitle"
-            android:layout_width="0dp"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Upcoming Events"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-            android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
-            android:importantForAccessibility="yes"/>
+            android:paddingStart="20dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:minHeight="56dp"
+            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            app:titleTextColor="?attr/colorOnSurface">
 
-        <!-- Simple menu button for accessing past events -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMenu"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="Access past events and settings"
-            app:icon="@drawable/ic_menu"
-            app:iconTint="?attr/colorOnSurface" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/textMainTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Upcoming Events"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:importantForAccessibility="yes"/>
 
-    <!-- Clean Events List -->
+                <!-- Enhanced menu button with proper Material 3 styling -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMenu"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:contentDescription="View filter options and settings"
+                    app:icon="@drawable/ic_menu"
+                    app:iconTint="?attr/colorOnSecondaryContainer"
+                    app:backgroundTint="?attr/colorSecondaryContainer"
+                    app:cornerRadius="10dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Enhanced Events List with Material 3 styling -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/eventRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/headerContainer"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="8dp"
-        android:paddingBottom="70dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingBottom="76dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:clipToPadding="false"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="outsideOverlay" />
+        android:scrollbars="none"
+        android:overScrollMode="ifContentScrolls"
+        android:nestedScrollingEnabled="true" />
 
-    <!-- Simple Empty State -->
+    <!-- Enhanced Material 3 Empty State -->
     <LinearLayout
         android:id="@+id/emptyStateContainer"
         android:layout_width="wrap_content"
@@ -71,19 +91,33 @@
         android:orientation="vertical"
         android:gravity="center"
         android:visibility="gone"
+        android:paddingHorizontal="32dp"
         app:layout_constraintTop_toTopOf="@id/eventRecyclerView"
         app:layout_constraintBottom_toBottomOf="@id/eventRecyclerView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
-            android:id="@+id/imageEmptyState"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_empty_calendar"
-            android:contentDescription="No upcoming events"
-            android:layout_marginBottom="16dp"
-            android:alpha="0.6" />
+        <!-- Smaller empty state for landscape -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+            app:cardCornerRadius="48dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:id="@+id/imageEmptyState"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_empty_calendar"
+                android:contentDescription="No upcoming events"
+                app:tint="?attr/colorOnSurfaceVariant"
+                android:alpha="0.7" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/textEmpty"
@@ -93,22 +127,22 @@
             android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
             android:textColor="?attr/colorOnSurface"
             android:gravity="center"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="6dp" />
 
         <TextView
             android:id="@+id/textEmptySubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add your first event to get started"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center"
             android:maxLines="2"
-            android:layout_marginHorizontal="40dp" />
+            android:lineSpacingExtra="2dp" />
 
     </LinearLayout>
 
-    <!-- Clean Add Button -->
+    <!-- Enhanced Material 3 FAB for landscape -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addEvent"
         android:layout_width="wrap_content"
@@ -116,10 +150,14 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:contentDescription="Add new event"
-        app:tint="?attr/colorOnPrimary"
         app:srcCompat="@drawable/ic_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:elevation="6dp" />
+        app:fabSize="normal"
+        app:backgroundTint="?attr/colorPrimaryContainer"
+        app:tint="?attr/colorOnPrimaryContainer"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:borderWidth="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
