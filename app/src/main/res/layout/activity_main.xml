@@ -288,12 +288,9 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="24dp"
         android:text="@string/add_event"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
         android:contentDescription="@string/add_event"
-        app:backgroundTint="?attr/colorPrimary"
         app:tint="?attr/colorOnPrimary"
         app:icon="@drawable/ic_add"
-        app:iconTint="?attr/colorOnPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:elevation="6dp" />
