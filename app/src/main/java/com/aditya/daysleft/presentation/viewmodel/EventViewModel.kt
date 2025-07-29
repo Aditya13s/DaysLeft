@@ -19,7 +19,7 @@ class EventViewModel(
     private val _sortOption = MutableLiveData(SortOption.DATE)
     val sortOption: LiveData<SortOption> = _sortOption
     
-    private val _filterOption = MutableLiveData(FilterOption.ALL)
+    private val _filterOption = MutableLiveData(FilterOption.UPCOMING_ONLY)
     val filterOption: LiveData<FilterOption> = _filterOption
     
     val events: LiveData<List<Event>> = _sortOption.switchMap { sortOption ->

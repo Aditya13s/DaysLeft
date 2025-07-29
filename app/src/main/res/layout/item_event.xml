@@ -3,71 +3,74 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="10dp"
-    android:layout_marginVertical="3dp"
+    android:layout_marginVertical="4dp"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="1dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp">
 
-        <!-- Title and Days Left Row -->
+        <!-- Main Content Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
 
-            <!-- Title: strong hierarchy, left aligned -->
-            <TextView
-                android:id="@+id/textTitle"
+            <!-- Event Title and Date -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="start"
-                android:importantForAccessibility="yes"
-                android:maxLines="2"
-                android:text="Birthday Party"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:lineSpacingExtra="1dp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Birthday Party"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:importantForAccessibility="yes" />
+
+                <TextView
+                    android:id="@+id/textDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aug 14, 2025"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    android:layout_marginTop="2dp"
+                    android:importantForAccessibility="yes" />
+
+            </LinearLayout>
 
             <!-- Days Left Badge -->
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipDaysLeft"
-                style="@style/Widget.Material3.Chip.Assist"
+            <TextView
+                android:id="@+id/textDaysLeft"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="10 days left"
-                android:textSize="11sp"
+                android:background="@drawable/days_left_background"
+                android:text="10 days"
+                android:textColor="?attr/colorOnPrimaryContainer"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                app:chipBackgroundColor="?attr/colorPrimaryContainer"
-                app:chipCornerRadius="12dp"
-                app:chipMinHeight="28dp" />
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:layout_marginStart="12dp" />
+
         </LinearLayout>
 
-        <!-- Date Row -->
-        <TextView
-            android:id="@+id/textDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:importantForAccessibility="yes"
-            android:maxLines="1"
-            android:text="Aug 14, 2025"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Action Buttons Row -->
+        <!-- Simple Action Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,38 +79,29 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
-                style="@style/Widget.Material3.Button.TonalButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginEnd="6dp"
-                android:contentDescription="@string/edit_event"
-                android:minWidth="48dp"
-                android:minHeight="40dp"
-                android:text="@string/edit"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Edit event"
+                android:text="Edit"
                 android:textAllCaps="false"
                 android:textSize="12sp"
-                app:cornerRadius="10dp"
                 app:icon="@drawable/ic_edit"
-                app:iconGravity="textStart"
-                app:iconSize="16dp"
-                app:iconPadding="6dp" />
+                app:iconSize="16dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:contentDescription="@string/delete_event"
-                android:minWidth="48dp"
-                android:minHeight="40dp"
-                android:text="@string/delete"
+                android:layout_height="36dp"
+                android:contentDescription="Delete event"
+                android:text="Delete"
                 android:textAllCaps="false"
                 android:textSize="12sp"
-                app:cornerRadius="10dp"
                 app:icon="@drawable/ic_delete"
-                app:iconGravity="textStart"
-                app:iconSize="16dp"
-                app:iconPadding="6dp" />
+                app:iconSize="16dp" />
+
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

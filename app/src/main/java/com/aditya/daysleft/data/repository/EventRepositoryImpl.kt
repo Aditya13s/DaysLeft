@@ -11,7 +11,7 @@ import com.aditya.daysleft.utils.DaysLeftUtil
 
 class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
     override fun getEvents(): LiveData<List<Event>> {
-        return getEvents(SortOption.DAYS_LEFT, FilterOption.ALL)
+        return getEvents(SortOption.DAYS_LEFT, FilterOption.UPCOMING_ONLY)
     }
     
     override fun getEvents(sortOption: SortOption, filterOption: FilterOption): LiveData<List<Event>> {
@@ -35,6 +35,11 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 // Get events starting from tomorrow (start of tomorrow)
                 val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)
                 dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive of startOfTomorrow
+            }
+            FilterOption.UPCOMING_ONLY -> {
+                // Get events from today onwards (includes today and future)
+                val startOfToday = DaysLeftUtil.getStartOfToday()
+                dao.getEventsAfterDate(startOfToday - 1) // -1 to make it inclusive of startOfToday
             }
             FilterOption.PAST -> {
                 // Use start of today to exclude today's events from past

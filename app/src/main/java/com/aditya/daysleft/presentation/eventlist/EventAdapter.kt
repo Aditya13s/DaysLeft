@@ -52,6 +52,12 @@ class EventAdapter(
                     listItems.add(EventListItem.EventItem(event))
                 }
             }
+            FilterOption.UPCOMING_ONLY -> {
+                // Show today and upcoming events without section header
+                sortedEvents.filter { !DaysLeftUtil.isPastEvent(it.dateMillis) }.forEach { event ->
+                    listItems.add(EventListItem.EventItem(event))
+                }
+            }
             FilterOption.PAST -> {
                 // Show only past events without section header, most recent first
                 sortedEvents.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }.reversed().forEach { event ->
@@ -107,35 +113,15 @@ class EventAdapter(
                 Date(event.dateMillis)
             )
             
-            // Update days text with relative formatting for the chip
+            // Update days text for the new simple badge
             val daysText = DaysLeftUtil.getRelativeDateText(event.dateMillis)
-            binding.chipDaysLeft.text = daysText
-            
-            // Set chip color based on urgency for better visual distinction
-            val context = binding.root.context
-            when {
-                DaysLeftUtil.isTodayEvent(event.dateMillis) -> {
-                    // Today events - use orange for urgency
-                    binding.chipDaysLeft.setChipBackgroundColorResource(R.color.chip_today_background)
-                    binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_today_text))
-                }
-                DaysLeftUtil.isPastEvent(event.dateMillis) -> {
-                    // Past events - use gray for completed/past items
-                    binding.chipDaysLeft.setChipBackgroundColorResource(R.color.chip_past_background)
-                    binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_past_text))
-                }
-                else -> {
-                    // Future events - use secondary container color
-                    binding.chipDaysLeft.setChipBackgroundColorResource(R.color.chip_upcoming_background)
-                    binding.chipDaysLeft.setTextColor(context.getColor(R.color.chip_upcoming_text))
-                }
-            }
+            binding.textDaysLeft.text = daysText
             
             // Enhanced accessibility
             val eventDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(event.dateMillis))
             binding.textTitle.contentDescription = "Event: ${event.title}"
             binding.textDate.contentDescription = "Date: $eventDate"
-            binding.chipDaysLeft.contentDescription = "Time remaining: $daysText"
+            binding.textDaysLeft.contentDescription = "Time remaining: $daysText"
             
             binding.btnEdit.setOnClickListener { onEdit(event) }
             binding.btnDelete.setOnClickListener { onDelete(event) }
