@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaysLeft - Material 3 Design Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fef7ff;
+            color: #1c1b1f;
+            line-height: 1.6;
+        }
+        
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: #fef7ff;
+            border-radius: 24px;
+            padding: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid #e7e0ec;
+        }
+        
+        .app-bar {
+            background: #fef7ff;
+            padding: 24px 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .app-title {
+            font-size: 28px;
+            font-weight: 500;
+            color: #1c1b1f;
+        }
+        
+        .menu-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #e8def8;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+        
+        .menu-button:hover {
+            background: #e6e0e9;
+            transform: scale(1.05);
+        }
+        
+        .content {
+            padding: 8px 20px;
+            min-height: 400px;
+        }
+        
+        .event-card {
+            background: #f7f2fa;
+            border: 1px solid #cac4d0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: all 200ms ease;
+            cursor: pointer;
+        }
+        
+        .event-card:hover {
+            background: #ece6f0;
+            border-color: #6750a4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(103, 80, 164, 0.1);
+        }
+        
+        .event-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .event-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: #e8def8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+        
+        .event-info {
+            flex: 1;
+        }
+        
+        .event-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1c1b1f;
+            margin-bottom: 4px;
+        }
+        
+        .event-date {
+            font-size: 14px;
+            color: #49454f;
+        }
+        
+        .days-badge {
+            background: #eaddff;
+            color: #21005d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            min-width: 48px;
+            text-align: center;
+        }
+        
+        .event-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms ease;
+            min-width: 64px;
+            height: 40px;
+        }
+        
+        .edit-button {
+            background: transparent;
+            color: #6750a4;
+        }
+        
+        .edit-button:hover {
+            background: rgba(103, 80, 164, 0.08);
+        }
+        
+        .delete-button {
+            background: transparent;
+            color: #ba1a1a;
+        }
+        
+        .delete-button:hover {
+            background: rgba(186, 26, 26, 0.08);
+        }
+        
+        .fab {
+            position: fixed;
+            bottom: 88px;
+            right: 44px;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: #eaddff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(103, 80, 164, 0.2);
+            transition: all 200ms ease;
+        }
+        
+        .fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(103, 80, 164, 0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 32px;
+        }
+        
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+            background: #ece6f0;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #49454f;
+            opacity: 0.7;
+        }
+        
+        .empty-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: #1c1b1f;
+            margin-bottom: 8px;
+        }
+        
+        .empty-subtitle {
+            font-size: 16px;
+            color: #49454f;
+            line-height: 1.5;
+        }
+        
+        .demo-note {
+            text-align: center;
+            padding: 20px;
+            background: #e8def8;
+            border-radius: 16px;
+            margin: 20px;
+            color: #21005d;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body { background: #10131c; color: #e6e0e9; }
+            .phone-container { background: #10131c; border-color: #49454f; }
+            .app-bar { background: #10131c; }
+            .app-title { color: #e6e0e9; }
+            .menu-button { background: #4a4458; }
+            .menu-button:hover { background: #36343b; }
+            .event-card { background: #1c1b1f; border-color: #49454f; }
+            .event-card:hover { background: #2b2930; border-color: #d0bcff; }
+            .event-icon { background: #4a4458; }
+            .event-title { color: #e6e0e9; }
+            .event-date { color: #cac4d0; }
+            .days-badge { background: #4f378b; color: #eaddff; }
+            .edit-button { color: #d0bcff; }
+            .delete-button { color: #ffb4ab; }
+            .fab { background: #4f378b; }
+            .empty-icon { background: #2b2930; color: #cac4d0; }
+            .empty-title { color: #e6e0e9; }
+            .empty-subtitle { color: #cac4d0; }
+            .demo-note { background: #4a4458; color: #ccc2dc; }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-note">
+        <h3>🎨 DaysLeft - Material 3 Design Preview</h3>
+        <p>Enhanced UI with Material 3 components, better typography, and improved accessibility</p>
+    </div>
+    
+    <div class="phone-container">
+        <!-- App Bar -->
+        <div class="app-bar">
+            <h1 class="app-title">Upcoming Events</h1>
+            <button class="menu-button">⋮</button>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Event Card 1 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div class="event-icon">📅</div>
+                    <div class="event-info">
+                        <div class="event-title">Birthday Party</div>
+                        <div class="event-date">Aug 14, 2025</div>
+                    </div>
+                    <div class="days-badge">10 days</div>
+                </div>
+                <div class="event-actions">
+                    <button class="action-button edit-button">✏️ Edit</button>
+                    <button class="action-button delete-button">🗑️ Delete</button>
+                </div>
+            </div>
+            
+            <!-- Event Card 2 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div class="event-icon">🎓</div>
+                    <div class="event-info">
+                        <div class="event-title">Graduation Ceremony</div>
+                        <div class="event-date">Sep 15, 2025</div>
+                    </div>
+                    <div class="days-badge">42 days</div>
+                </div>
+                <div class="event-actions">
+                    <button class="action-button edit-button">✏️ Edit</button>
+                    <button class="action-button delete-button">🗑️ Delete</button>
+                </div>
+            </div>
+            
+            <!-- Event Card 3 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div class="event-icon">💍</div>
+                    <div class="event-info">
+                        <div class="event-title">Wedding Anniversary</div>
+                        <div class="event-date">Oct 20, 2025</div>
+                    </div>
+                    <div class="days-badge">77 days</div>
+                </div>
+                <div class="event-actions">
+                    <button class="action-button edit-button">✏️ Edit</button>
+                    <button class="action-button delete-button">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAB -->
+        <button class="fab">➕</button>
+    </div>
+    
+    <div class="demo-note">
+        <h4>🚀 Material 3 Features Implemented:</h4>
+        <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+            <li>✨ Dynamic color system with light/dark theme support</li>
+            <li>🎯 Enhanced touch targets and accessibility</li>
+            <li>🔘 Material 3 button variants and interactions</li>
+            <li>📱 Responsive design with proper spacing</li>
+            <li>🌊 Smooth animations and state transitions</li>
+            <li>♿ WCAG compliant color contrast and navigation</li>
+        </ul>
+    </div>
+</body>
+</html>

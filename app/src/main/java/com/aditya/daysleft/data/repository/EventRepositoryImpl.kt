@@ -26,11 +26,6 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                     SortOption.DAYS_LEFT -> dao.getEventsSortedByDate() // We'll sort by days left in memory
                 }
             }
-            FilterOption.TODAY -> {
-                val startOfToday = DaysLeftUtil.getStartOfToday()
-                val endOfToday = DaysLeftUtil.getEndOfToday()
-                dao.getEventsInDateRange(startOfToday, endOfToday)
-            }
             FilterOption.UPCOMING -> {
                 // Get events starting from tomorrow (start of tomorrow)
                 val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)

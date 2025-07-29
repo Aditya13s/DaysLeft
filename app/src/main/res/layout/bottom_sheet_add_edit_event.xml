@@ -4,21 +4,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
+    android:background="?attr/colorSurfaceContainerHigh"
     android:orientation="vertical"
-    android:paddingTop="24dp"
-    android:paddingBottom="24dp"
+    android:paddingTop="32dp"
+    android:paddingBottom="32dp"
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
+    <!-- Enhanced Header with drag handle -->
+    <View
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:background="?attr/colorOnSurfaceVariant"
+        android:alpha="0.4"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Enhanced Title Input -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/titleInputLayout"
-        style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/event_title_hint"
-        app:boxBackgroundMode="filled"
-        app:boxBackgroundColor="?attr/colorSurfaceVariant">
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary"
+        app:startIconDrawable="@drawable/ic_event"
+        app:startIconTint="?attr/colorOnSurfaceVariant">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTitle"
@@ -26,55 +43,60 @@
             android:layout_height="wrap_content"
             android:inputType="textCapWords"
             android:maxLines="1"
-            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSurface"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Enhanced Date Selection Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonDate"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="@string/select_date"
         android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         app:icon="@drawable/ic_event"
         app:iconTint="?attr/colorPrimary"
-        android:layout_marginTop="18dp"
-        app:cornerRadius="12dp" />
+        app:iconSize="20dp"
+        android:layout_marginTop="20dp"
+        app:cornerRadius="16dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="?attr/colorOutline" />
 
+    <!-- Enhanced Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:layout_marginTop="28dp">
+        android:layout_marginTop="32dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonCancel"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="@string/cancel"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            android:textAllCaps="false"
+            app:cornerRadius="24dp"
+            android:paddingHorizontal="24dp"
+            android:layout_marginEnd="12dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSave"
             style="@style/Widget.Material3.Button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
             android:text="@string/save"
-            android:textSize="16sp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textAllCaps="false"
-            app:cornerRadius="12dp"
+            app:cornerRadius="24dp"
+            android:paddingHorizontal="32dp"
             app:icon="@drawable/ic_save"
-            app:iconTint="?attr/colorOnPrimary"
-            android:layout_marginEnd="8dp"/>
+            app:iconSize="18dp"
+            app:iconTint="?attr/colorOnPrimary"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonCancel"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:textSize="16sp"
-            android:textAllCaps="false"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/ic_close"
-            app:iconTint="?attr/colorPrimary"
-            android:layout_marginStart="8dp"/>
     </LinearLayout>
 </LinearLayout>

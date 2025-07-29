@@ -89,7 +89,6 @@ class MainActivity : AppCompatActivity() {
     private fun showFilterMenu() {
         val options = arrayOf(
             "Upcoming Events",
-            "Today Only",
             "Past Events",
             "All Events"
         )
@@ -103,14 +102,10 @@ class MainActivity : AppCompatActivity() {
                         eventViewModel.setFilterOption(FilterOption.UPCOMING_ONLY)
                     }
                     1 -> {
-                        binding.textMainTitle.text = "Today's Events"
-                        eventViewModel.setFilterOption(FilterOption.TODAY)
-                    }
-                    2 -> {
                         binding.textMainTitle.text = "Past Events"
                         eventViewModel.setFilterOption(FilterOption.PAST)
                     }
-                    3 -> {
+                    2 -> {
                         binding.textMainTitle.text = "All Events"
                         eventViewModel.setFilterOption(FilterOption.ALL)
                     }
