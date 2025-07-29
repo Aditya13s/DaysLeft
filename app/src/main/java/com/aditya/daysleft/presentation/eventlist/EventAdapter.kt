@@ -40,12 +40,6 @@ class EventAdapter(
         
         // For specific filters, don't show sections, just show the events
         when (filterOption) {
-            FilterOption.TODAY -> {
-                // Show only today events without section header
-                sortedEvents.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }.forEach { event ->
-                    listItems.add(EventListItem.EventItem(event))
-                }
-            }
             FilterOption.UPCOMING -> {
                 // Show only upcoming events without section header
                 sortedEvents.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }.forEach { event ->
