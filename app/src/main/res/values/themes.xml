@@ -45,6 +45,24 @@
         
         <!-- Enable dynamic colors for supported devices -->
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.Material3.DynamicColors.DayNight</item>
+        
+        <!-- Material 3 Shape System -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Material3.Corner.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Material3.Corner.Large</item>
+        
+        <!-- Material 3 Motion System -->
+        <item name="motionDurationShort1">100</item>
+        <item name="motionDurationShort2">200</item>
+        <item name="motionDurationMedium1">300</item>
+        <item name="motionDurationMedium2">400</item>
+        <item name="motionDurationLong1">500</item>
+        <item name="motionDurationLong2">600</item>
+        
+        <!-- Enhanced accessibility -->
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.DaysLeft" parent="Base.Theme.DaysLeft" />
