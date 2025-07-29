@@ -14,6 +14,8 @@
     <string name="empty_events_title">No Events Yet</string>
     <string name="empty_events_subtitle">Start tracking your important dates by adding your first event</string>
     <string name="empty_events_illustration">Empty calendar illustration</string>
+    <string name="empty_upcoming_events">No upcoming events</string>
+    <string name="empty_upcoming_subtitle">Add some events to see them here</string>
     
     <string name="edit_event">Edit event</string>
     <string name="delete_event">Delete event</string>
