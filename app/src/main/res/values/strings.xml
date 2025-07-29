@@ -34,4 +34,6 @@
 
     <!-- Accessibility -->
     <string name="add_event">Add event</string>
+    <string name="view_past_events">View Past Events</string>
+    <string name="past_events">Past Events</string>
 </resources>
