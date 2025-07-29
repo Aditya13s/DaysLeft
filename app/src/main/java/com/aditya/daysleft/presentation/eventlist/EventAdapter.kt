@@ -15,7 +15,8 @@ import java.util.Locale
 
 class EventAdapter(
     private val onEdit: (Event) -> Unit, 
-    private val onDelete: (Event) -> Unit
+    private val onDelete: (Event) -> Unit,
+    private val onRestore: ((Event) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var listItems: List<EventListItem> = emptyList()
@@ -61,6 +62,12 @@ class EventAdapter(
             FilterOption.NEXT_7_DAYS -> {
                 // Show events in next 7 days without section header
                 sortedEvents.forEach { event ->
+                    listItems.add(EventListItem.EventItem(event))
+                }
+            }
+            FilterOption.ARCHIVED -> {
+                // Show archived events without section header, most recent first
+                sortedEvents.reversed().forEach { event ->
                     listItems.add(EventListItem.EventItem(event))
                 }
             }
@@ -117,8 +124,20 @@ class EventAdapter(
             binding.textDate.contentDescription = "Date: $eventDate"
             binding.textDaysLeft.contentDescription = "Time remaining: $daysText"
             
-            binding.btnEdit.setOnClickListener { onEdit(event) }
-            binding.btnDelete.setOnClickListener { onDelete(event) }
+            // Handle archived events differently
+            if (currentFilter == FilterOption.ARCHIVED) {
+                binding.btnEdit.text = "Restore"
+                binding.btnEdit.setOnClickListener { 
+                    onRestore?.invoke(event.copy(isArchived = false))
+                }
+                binding.btnDelete.text = "Delete"
+                binding.btnDelete.setOnClickListener { onDelete(event) }
+            } else {
+                binding.btnEdit.text = "Edit"
+                binding.btnEdit.setOnClickListener { onEdit(event) }
+                binding.btnDelete.text = "Delete"
+                binding.btnDelete.setOnClickListener { onDelete(event) }
+            }
         }
     }
     

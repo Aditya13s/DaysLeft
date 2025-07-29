@@ -10,6 +10,7 @@ import com.aditya.daysleft.domain.model.Event
 import com.aditya.daysleft.domain.model.SortOption
 import com.aditya.daysleft.domain.model.FilterOption
 import com.aditya.daysleft.domain.usecases.EventUseCases
+import com.aditya.daysleft.notification.NotificationScheduler
 import kotlinx.coroutines.launch
 
 class EventViewModel(
@@ -36,7 +37,39 @@ class EventViewModel(
         _filterOption.value = filterOption
     }
 
-    fun addEvent(event: Event) = viewModelScope.launch { useCases.addEvent(event) }
-    fun updateEvent(event: Event) = viewModelScope.launch { useCases.updateEvent(event) }
-    fun deleteEvent(event: Event) = viewModelScope.launch { useCases.deleteEvent(event) }
+    fun addEvent(event: Event) = viewModelScope.launch { 
+        useCases.addEvent(event)
+        // Schedule reminder if enabled
+        if (event.notifyMe && !event.isArchived) {
+            val scheduler = NotificationScheduler(getApplication())
+            scheduler.scheduleEventReminder(event)
+        }
+    }
+    
+    fun updateEvent(event: Event) = viewModelScope.launch { 
+        useCases.updateEvent(event)
+        // Update reminder scheduling
+        val scheduler = NotificationScheduler(getApplication())
+        if (event.notifyMe && !event.isArchived) {
+            scheduler.scheduleEventReminder(event)
+        } else {
+            scheduler.cancelEventReminder(event.id)
+        }
+    }
+    
+    fun deleteEvent(event: Event) = viewModelScope.launch { 
+        useCases.deleteEvent(event)
+        // Cancel any scheduled reminders
+        val scheduler = NotificationScheduler(getApplication())
+        scheduler.cancelEventReminder(event.id)
+    }
+    
+    fun restoreEvent(eventId: Int) = viewModelScope.launch {
+        useCases.restoreEvent(eventId)
+    }
+    
+    fun archiveOldEvents() = viewModelScope.launch {
+        val thirtyDaysAgo = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L)
+        useCases.archiveOldEvents(thirtyDaysAgo)
+    }
 }
