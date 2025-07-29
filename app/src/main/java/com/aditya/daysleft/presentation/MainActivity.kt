@@ -24,7 +24,7 @@ import com.aditya.daysleft.presentation.addevent.AddEditEventBottomSheet
 import com.aditya.daysleft.presentation.eventlist.EventAdapter
 import com.aditya.daysleft.presentation.viewmodel.EventViewModel
 import com.aditya.daysleft.presentation.viewmodel.EventViewModelFactory
-import com.aditya.daysleft.utils.DaysLeftUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -47,53 +47,14 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
         setupRecyclerView()
-        setupFilter()
-        setupDashboard()
         observeEvents()
         setupListeners()
     }
 
     private fun observeEvents() {
         eventViewModel.events.observe(this) { events ->
-            updateDashboard(events)
-            val currentFilter = eventViewModel.filterOption.value ?: FilterOption.ALL
-            adapter.submitList(events, currentFilter)
-            updateEmptyState(events, currentFilter)
-        }
-        
-        // Also observe filter changes to update the adapter
-        eventViewModel.filterOption.observe(this) { filterOption ->
-            val currentEvents = eventViewModel.events.value ?: emptyList()
-            adapter.submitList(currentEvents, filterOption)
-            updateEmptyState(currentEvents, filterOption)
-        }
-    }
-
-    private fun updateDashboard(events: List<Event>) {
-        val todayCount = events.count { DaysLeftUtil.isTodayEvent(it.dateMillis) }
-        val upcomingCount = events.count { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
-        val pastCount = events.count { DaysLeftUtil.isPastEvent(it.dateMillis) }
-        
-        binding.textTodayCount.text = todayCount.toString()
-        binding.textUpcomingCount.text = upcomingCount.toString()
-        binding.textPastCount.text = pastCount.toString()
-    }
-
-    private fun setupDashboard() {
-        // Add click listeners for dashboard cards
-        binding.cardToday.setOnClickListener {
-            binding.chipToday.isChecked = true
-            eventViewModel.setFilterOption(FilterOption.TODAY)
-        }
-        
-        binding.cardUpcoming.setOnClickListener {
-            binding.chipUpcoming.isChecked = true
-            eventViewModel.setFilterOption(FilterOption.UPCOMING)
-        }
-        
-        binding.cardPast.setOnClickListener {
-            binding.chipPast.isChecked = true
-            eventViewModel.setFilterOption(FilterOption.PAST)
+            adapter.submitList(events, FilterOption.UPCOMING_ONLY)
+            updateEmptyState(events)
         }
     }
 
@@ -108,28 +69,10 @@ class MainActivity : AppCompatActivity() {
         )
         val factory = EventViewModelFactory(application, eventUseCases)
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
-    }
-
-    private fun setupFilter() {
-        // Always sort by Days Left
+        
+        // Set to show upcoming events only by default
         eventViewModel.setSortOption(SortOption.DAYS_LEFT)
-        
-        // Add accessibility descriptions for filter chips
-        binding.chipAllEvents.contentDescription = "Show all events with sections"
-        binding.chipToday.contentDescription = "Show only today's events"
-        binding.chipUpcoming.contentDescription = "Show only upcoming events"
-        binding.chipPast.contentDescription = "Show only past events"
-        
-        // Set up chip selection listeners
-        binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-            val filterOption = when {
-                checkedIds.contains(R.id.chipToday) -> FilterOption.TODAY
-                checkedIds.contains(R.id.chipUpcoming) -> FilterOption.UPCOMING
-                checkedIds.contains(R.id.chipPast) -> FilterOption.PAST
-                else -> FilterOption.ALL
-            }
-            eventViewModel.setFilterOption(filterOption)
-        }
+        eventViewModel.setFilterOption(FilterOption.UPCOMING_ONLY)
     }
 
     private fun setupListeners() {
@@ -137,6 +80,49 @@ class MainActivity : AppCompatActivity() {
             AddEditEventBottomSheet.newInstance()
                 .show(supportFragmentManager, "AddEventBottomSheet")
         }
+        
+        binding.btnMenu.setOnClickListener {
+            showFilterMenu()
+        }
+    }
+    
+    private fun showFilterMenu() {
+        val options = arrayOf(
+            "Upcoming Events",
+            "Today Only",
+            "Past Events",
+            "All Events"
+        )
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle("View Events")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        binding.textMainTitle.text = "Upcoming Events"
+                        eventViewModel.setFilterOption(FilterOption.UPCOMING_ONLY)
+                    }
+                    1 -> {
+                        binding.textMainTitle.text = "Today's Events"
+                        eventViewModel.setFilterOption(FilterOption.TODAY)
+                    }
+                    2 -> {
+                        binding.textMainTitle.text = "Past Events"
+                        eventViewModel.setFilterOption(FilterOption.PAST)
+                    }
+                    3 -> {
+                        binding.textMainTitle.text = "All Events"
+                        eventViewModel.setFilterOption(FilterOption.ALL)
+                    }
+                }
+                // Re-observe to update the display
+                eventViewModel.events.observe(this) { events ->
+                    val currentFilter = eventViewModel.filterOption.value ?: FilterOption.UPCOMING_ONLY
+                    adapter.submitList(events, currentFilter)
+                    updateEmptyState(events)
+                }
+            }
+            .show()
     }
 
     private fun setupRecyclerView() {
@@ -150,8 +136,8 @@ class MainActivity : AppCompatActivity() {
     private fun handleDeleteEvent(event: Event) {
         recentlyDeletedEvent = event
         eventViewModel.deleteEvent(event)
-        Snackbar.make(binding.root, getString(R.string.event_deleted), Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.undo)) {
+        Snackbar.make(binding.root, "Event deleted", Snackbar.LENGTH_LONG)
+            .setAction("Undo") {
                 recentlyDeletedEvent?.let { eventViewModel.addEvent(it) }
             }.show()
     }
@@ -161,28 +147,9 @@ class MainActivity : AppCompatActivity() {
             .show(supportFragmentManager, "EditEventBottomSheet")
     }
 
-    private fun updateEmptyState(events: List<Event>, filterOption: FilterOption) {
-        val filteredEvents = when (filterOption) {
-            FilterOption.TODAY -> events.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
-            FilterOption.UPCOMING -> events.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
-            FilterOption.PAST -> events.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
-            FilterOption.ALL -> events
-            else -> events
-        }
-        
-        val isEmpty = filteredEvents.isEmpty()
+    private fun updateEmptyState(events: List<Event>) {
+        val isEmpty = events.isEmpty()
         binding.emptyStateContainer.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.eventRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
-        
-        // Update empty state text based on filter
-        if (isEmpty) {
-            val emptyText = when (filterOption) {
-                FilterOption.TODAY -> "No events scheduled for today"
-                FilterOption.UPCOMING -> "No upcoming events"
-                FilterOption.PAST -> "No past events"
-                else -> getString(R.string.empty_events_title)
-            }
-            binding.textEmpty.text = emptyText
-        }
     }
 }

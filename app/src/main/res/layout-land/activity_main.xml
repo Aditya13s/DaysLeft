@@ -8,16 +8,16 @@
     android:background="?attr/colorSurface"
     tools:context=".presentation.MainActivity">
 
-    <!-- Header with title and summary cards in one row for landscape -->
+    <!-- Simplified Header for landscape -->
     <LinearLayout
         android:id="@+id/headerContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
+        android:paddingStart="20dp"
         android:paddingEnd="16dp"
         android:paddingTop="12dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="12dp"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,215 +28,42 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="My Events"
+            android:text="Upcoming Events"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
             android:textColor="?attr/colorOnSurface"
             android:textStyle="bold"
-            android:paddingEnd="16dp"
             android:importantForAccessibility="yes"/>
 
-        <!-- Compact Summary Cards for landscape -->
-        <LinearLayout
-            android:id="@+id/dashboardContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardToday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:strokeWidth="0.5dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
-                android:contentDescription="Today's events">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/textTodayCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                        android:textColor="?attr/colorPrimary"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="6dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Today"
-                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                        android:textColor="?attr/colorOnSurface" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardUpcoming"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:strokeWidth="0.5dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
-                android:contentDescription="Upcoming events">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/textUpcomingCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                        android:textColor="?attr/colorSecondary"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="6dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Later"
-                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                        android:textColor="?attr/colorOnSurface" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardPast"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:strokeWidth="0.5dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
-                android:contentDescription="Past events">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/textPastCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="6dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Past"
-                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                        android:textColor="?attr/colorOnSurface" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
+        <!-- Simple menu button for accessing past events -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenu"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Access past events and settings"
+            app:icon="@drawable/ic_menu"
+            app:iconTint="?attr/colorOnSurface" />
 
     </LinearLayout>
 
-    <!-- Compact Filter Control -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/filterChipGroup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="6dp"
-        app:singleSelection="true"
-        app:selectionRequired="true"
-        app:chipSpacing="8dp"
-        app:layout_constraintTop_toBottomOf="@id/headerContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipAllEvents"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="@string/filter_all_events"
-            android:checked="true"
-            android:textSize="12sp" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipToday"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="@string/filter_today"
-            android:textSize="12sp" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipUpcoming"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="@string/filter_upcoming"
-            android:textSize="12sp" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipPast"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="@string/filter_past"
-            android:textSize="12sp" />
-
-    </com.google.android.material.chip.ChipGroup>
-
+    <!-- Clean Events List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/eventRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/filterChipGroup"
+        app:layout_constraintTop_toBottomOf="@id/headerContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="0dp"
+        android:paddingTop="8dp"
         android:paddingBottom="70dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:clipToPadding="false"
         android:scrollbars="vertical"
         android:scrollbarStyle="outsideOverlay" />
 
+    <!-- Simple Empty State -->
     <LinearLayout
         android:id="@+id/emptyStateContainer"
         android:layout_width="wrap_content"
@@ -254,7 +81,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/ic_empty_calendar"
-            android:contentDescription="@string/empty_events_illustration"
+            android:contentDescription="No upcoming events"
             android:layout_marginBottom="16dp"
             android:alpha="0.6" />
 
@@ -262,38 +89,35 @@
             android:id="@+id/textEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/empty_events_title"
+            android:text="No upcoming events"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
             android:textColor="?attr/colorOnSurface"
             android:gravity="center"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/textEmptySubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/empty_events_subtitle"
+            android:text="Add your first event to get started"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center"
             android:maxLines="2"
-            android:layout_marginHorizontal="32dp" />
+            android:layout_marginHorizontal="40dp" />
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <!-- Clean Add Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:text="@string/add_event"
-        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-        android:contentDescription="@string/add_event"
-        app:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="Add new event"
         app:tint="?attr/colorOnPrimary"
-        app:icon="@drawable/ic_add"
-        app:iconTint="?attr/colorOnPrimary"
+        app:srcCompat="@drawable/ic_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:elevation="6dp" />
