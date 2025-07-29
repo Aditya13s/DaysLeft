@@ -56,9 +56,10 @@ class MainActivity : AppCompatActivity() {
     private fun observeEvents() {
         eventViewModel.events.observe(this) { events ->
             updateDashboard(events)
-            val currentFilter = eventViewModel.filterOption.value ?: FilterOption.ALL
+            val currentFilter = eventViewModel.filterOption.value ?: FilterOption.UPCOMING
             adapter.submitList(events, currentFilter)
             updateEmptyState(events, currentFilter)
+            updatePastEventsLink(events, currentFilter)
         }
         
         // Also observe filter changes to update the adapter
@@ -66,17 +67,16 @@ class MainActivity : AppCompatActivity() {
             val currentEvents = eventViewModel.events.value ?: emptyList()
             adapter.submitList(currentEvents, filterOption)
             updateEmptyState(currentEvents, filterOption)
+            updatePastEventsLink(currentEvents, filterOption)
         }
     }
 
     private fun updateDashboard(events: List<Event>) {
         val todayCount = events.count { DaysLeftUtil.isTodayEvent(it.dateMillis) }
         val upcomingCount = events.count { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
-        val pastCount = events.count { DaysLeftUtil.isPastEvent(it.dateMillis) }
         
         binding.textTodayCount.text = todayCount.toString()
         binding.textUpcomingCount.text = upcomingCount.toString()
-        binding.textPastCount.text = pastCount.toString()
     }
 
     private fun setupDashboard() {
@@ -89,11 +89,6 @@ class MainActivity : AppCompatActivity() {
         binding.cardUpcoming.setOnClickListener {
             binding.chipUpcoming.isChecked = true
             eventViewModel.setFilterOption(FilterOption.UPCOMING)
-        }
-        
-        binding.cardPast.setOnClickListener {
-            binding.chipPast.isChecked = true
-            eventViewModel.setFilterOption(FilterOption.PAST)
         }
     }
 
@@ -114,19 +109,21 @@ class MainActivity : AppCompatActivity() {
         // Always sort by Days Left
         eventViewModel.setSortOption(SortOption.DAYS_LEFT)
         
+        // Default to upcoming events filter for cleaner main screen
+        eventViewModel.setFilterOption(FilterOption.UPCOMING)
+        
         // Add accessibility descriptions for filter chips
         binding.chipAllEvents.contentDescription = "Show all events with sections"
         binding.chipToday.contentDescription = "Show only today's events"
         binding.chipUpcoming.contentDescription = "Show only upcoming events"
-        binding.chipPast.contentDescription = "Show only past events"
         
         // Set up chip selection listeners
         binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             val filterOption = when {
                 checkedIds.contains(R.id.chipToday) -> FilterOption.TODAY
                 checkedIds.contains(R.id.chipUpcoming) -> FilterOption.UPCOMING
-                checkedIds.contains(R.id.chipPast) -> FilterOption.PAST
-                else -> FilterOption.ALL
+                checkedIds.contains(R.id.chipAllEvents) -> FilterOption.ALL
+                else -> FilterOption.UPCOMING
             }
             eventViewModel.setFilterOption(filterOption)
         }
@@ -136,6 +133,12 @@ class MainActivity : AppCompatActivity() {
         binding.addEvent.setOnClickListener {
             AddEditEventBottomSheet.newInstance()
                 .show(supportFragmentManager, "AddEventBottomSheet")
+        }
+        
+        // Handle past events link
+        binding.textViewPastEvents.setOnClickListener {
+            binding.chipAllEvents.isChecked = true
+            eventViewModel.setFilterOption(FilterOption.PAST)
         }
     }
 
@@ -166,8 +169,8 @@ class MainActivity : AppCompatActivity() {
             FilterOption.TODAY -> events.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
             FilterOption.UPCOMING -> events.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
             FilterOption.PAST -> events.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
-            FilterOption.ALL -> events
-            else -> events
+            FilterOption.ALL -> events.filter { !DaysLeftUtil.isPastEvent(it.dateMillis) } // Exclude past events from "All"
+            else -> events.filter { !DaysLeftUtil.isPastEvent(it.dateMillis) }
         }
         
         val isEmpty = filteredEvents.isEmpty()
@@ -184,5 +187,12 @@ class MainActivity : AppCompatActivity() {
             }
             binding.textEmpty.text = emptyText
         }
+    }
+    
+    private fun updatePastEventsLink(events: List<Event>, filterOption: FilterOption) {
+        // Show past events link only when not in past view and past events exist
+        val hasPastEvents = events.any { DaysLeftUtil.isPastEvent(it.dateMillis) }
+        val shouldShowLink = hasPastEvents && filterOption != FilterOption.PAST
+        binding.textViewPastEvents.visibility = if (shouldShowLink) View.VISIBLE else View.GONE
     }
 }

@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="16dp"
-    android:paddingBottom="6dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    android:paddingTop="20dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
 
     <TextView
         android:id="@+id/textSectionHeader"
@@ -19,13 +19,13 @@
         android:letterSpacing="0.05"
         android:importantForAccessibility="yes"
         android:gravity="start"
-        android:paddingBottom="3dp" />
+        android:paddingBottom="4dp" />
 
     <!-- Subtle divider line -->
     <View
-        android:layout_width="36dp"
-        android:layout_height="2dp"
+        android:layout_width="40dp"
+        android:layout_height="3dp"
         android:background="?attr/colorPrimary"
-        android:alpha="0.6" />
+        android:alpha="0.7" />
 
 </LinearLayout>

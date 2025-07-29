@@ -65,10 +65,9 @@ class EventAdapter(
                 }
             }
             FilterOption.ALL -> {
-                // Show all events with sections
+                // Show only today and upcoming events, exclude past events from main screen
                 val todayEvents = sortedEvents.filter { DaysLeftUtil.isTodayEvent(it.dateMillis) }
                 val upcomingEvents = sortedEvents.filter { DaysLeftUtil.isUpcomingButNotToday(it.dateMillis) }
-                val pastEvents = sortedEvents.filter { DaysLeftUtil.isPastEvent(it.dateMillis) }
                 
                 // Add today events section
                 if (todayEvents.isNotEmpty()) {
@@ -82,14 +81,6 @@ class EventAdapter(
                 if (upcomingEvents.isNotEmpty()) {
                     listItems.add(EventListItem.SectionHeader(EventSection.UPCOMING.title))
                     upcomingEvents.forEach { event ->
-                        listItems.add(EventListItem.EventItem(event))
-                    }
-                }
-                
-                // Add past events section
-                if (pastEvents.isNotEmpty()) {
-                    listItems.add(EventListItem.SectionHeader(EventSection.PAST.title))
-                    pastEvents.reversed().forEach { event -> // Most recent past events first
                         listItems.add(EventListItem.EventItem(event))
                     }
                 }
