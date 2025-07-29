@@ -11,4 +11,7 @@ interface EventRepository {
     suspend fun addEvent(event: Event)
     suspend fun updateEvent(event: Event)
     suspend fun deleteEvent(event: Event)
+    suspend fun archiveOldEvents(cutoffMillis: Long)
+    suspend fun restoreEvent(eventId: Int)
+    fun getEventsWithReminders(currentTimeMillis: Long): LiveData<List<Event>>
 }

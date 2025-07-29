@@ -38,4 +38,21 @@ interface EventDao {
     
     @Query("SELECT * FROM events WHERE dateMillis < :beforeMillis ORDER BY dateMillis DESC")
     fun getEventsBeforeDate(beforeMillis: Long) : LiveData<List<EventEntity>>
+    
+    // Archive-related queries
+    @Query("SELECT * FROM events WHERE isArchived = 0 ORDER BY dateMillis ASC")
+    fun getActiveEvents() : LiveData<List<EventEntity>>
+    
+    @Query("SELECT * FROM events WHERE isArchived = 1 ORDER BY dateMillis DESC")
+    fun getArchivedEvents() : LiveData<List<EventEntity>>
+    
+    @Query("UPDATE events SET isArchived = 1 WHERE dateMillis < :cutoffMillis AND isArchived = 0")
+    suspend fun archiveOldEvents(cutoffMillis: Long)
+    
+    @Query("UPDATE events SET isArchived = 0 WHERE id = :eventId")
+    suspend fun restoreEvent(eventId: Int)
+    
+    // Reminder-related queries
+    @Query("SELECT * FROM events WHERE notifyMe = 1 AND isArchived = 0 AND dateMillis > :currentTimeMillis ORDER BY dateMillis ASC")
+    fun getEventsWithReminders(currentTimeMillis: Long) : LiveData<List<EventEntity>>
 }

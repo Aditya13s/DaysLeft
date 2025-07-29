@@ -20,6 +20,9 @@ import com.aditya.daysleft.domain.usecases.DeleteEvent
 import com.aditya.daysleft.domain.usecases.EventUseCases
 import com.aditya.daysleft.domain.usecases.GetEvents
 import com.aditya.daysleft.domain.usecases.UpdateEvent
+import com.aditya.daysleft.domain.usecases.RestoreEvent
+import com.aditya.daysleft.domain.usecases.ArchiveOldEvents
+import com.aditya.daysleft.domain.usecases.GetEventsWithReminders
 import com.aditya.daysleft.presentation.addevent.AddEditEventBottomSheet
 import com.aditya.daysleft.presentation.eventlist.EventAdapter
 import com.aditya.daysleft.presentation.viewmodel.EventViewModel
@@ -65,7 +68,10 @@ class MainActivity : AppCompatActivity() {
             getEvents = GetEvents(repository),
             addEvent = AddEvent(repository),
             updateEvent = UpdateEvent(repository),
-            deleteEvent = DeleteEvent(repository)
+            deleteEvent = DeleteEvent(repository),
+            restoreEvent = RestoreEvent(repository),
+            archiveOldEvents = ArchiveOldEvents(repository),
+            getEventsWithReminders = GetEventsWithReminders(repository)
         )
         val factory = EventViewModelFactory(application, eventUseCases)
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
@@ -90,7 +96,8 @@ class MainActivity : AppCompatActivity() {
         val options = arrayOf(
             "Upcoming Events",
             "Past Events",
-            "All Events"
+            "All Events",
+            "Archived Events"
         )
         
         MaterialAlertDialogBuilder(this)
@@ -109,6 +116,10 @@ class MainActivity : AppCompatActivity() {
                         binding.textMainTitle.text = "All Events"
                         eventViewModel.setFilterOption(FilterOption.ALL)
                     }
+                    3 -> {
+                        binding.textMainTitle.text = "Archived Events"
+                        eventViewModel.setFilterOption(FilterOption.ARCHIVED)
+                    }
                 }
                 // Re-observe to update the display
                 eventViewModel.events.observe(this) { events ->
@@ -123,7 +134,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = EventAdapter(
             onEdit = { event -> launchEditEvent(event) },
-            onDelete = { event -> handleDeleteEvent(event) })
+            onDelete = { event -> handleDeleteEvent(event) },
+            onRestore = { event -> handleRestoreEvent(event) }
+        )
         binding.eventRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.eventRecyclerView.adapter = adapter
     }
@@ -140,6 +153,11 @@ class MainActivity : AppCompatActivity() {
     private fun launchEditEvent(event: Event) {
         AddEditEventBottomSheet.newInstance(event)
             .show(supportFragmentManager, "EditEventBottomSheet")
+    }
+    
+    private fun handleRestoreEvent(event: Event) {
+        eventViewModel.restoreEvent(event.id)
+        Snackbar.make(binding.root, "Event restored", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun updateEmptyState(events: List<Event>) {

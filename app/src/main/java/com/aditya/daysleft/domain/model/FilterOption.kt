@@ -5,5 +5,6 @@ enum class FilterOption(val displayName: String) {
     UPCOMING("Upcoming"),
     UPCOMING_ONLY("Upcoming Only"), // Default option for upcoming events without past events
     PAST("Past"),
-    NEXT_7_DAYS("Next 7 Days")
+    NEXT_7_DAYS("Next 7 Days"),
+    ARCHIVED("Archived")
 }
