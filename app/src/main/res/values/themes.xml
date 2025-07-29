@@ -66,4 +66,16 @@
     </style>
 
     <style name="Theme.DaysLeft" parent="Base.Theme.DaysLeft" />
+    
+    <!-- Custom Delete Button Style for better color management -->
+    <style name="Widget.DaysLeft.Button.Delete" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorError</item>
+        <item name="iconTint">?attr/colorError</item>
+        <item name="rippleColor">?attr/colorErrorContainer</item>
+        <item name="strokeColor">?attr/colorError</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+        <item name="iconSize">18dp</item>
+    </style>
 </resources>

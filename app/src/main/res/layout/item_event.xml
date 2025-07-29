@@ -129,20 +129,15 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
-                style="@style/Widget.Material3.Button.TextButton"
+                style="@style/Widget.DaysLeft.Button.Delete"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:contentDescription="Delete event"
                 android:text="Delete"
                 android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                 android:paddingHorizontal="16dp"
                 android:minWidth="64dp"
-                app:icon="@drawable/ic_delete"
-                app:iconSize="18dp"
-                app:iconTint="?attr/colorError"
-                app:rippleColor="?attr/colorErrorContainer"
-                app:cornerRadius="20dp" />
+                app:icon="@drawable/ic_delete" />
 
         </LinearLayout>
     </LinearLayout>
