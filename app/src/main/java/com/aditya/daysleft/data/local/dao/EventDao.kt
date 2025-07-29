@@ -26,17 +26,17 @@ interface EventDao {
     fun getEvents() : LiveData<List<EventEntity>>
     
     // Sorting queries
-    @Query("SELECT * FROM events ORDER BY dateMillis ASC")
+    @Query("SELECT * FROM events WHERE isArchived = 0 ORDER BY dateMillis ASC")
     fun getEventsSortedByDate() : LiveData<List<EventEntity>>
     
     // Filter queries
-    @Query("SELECT * FROM events WHERE dateMillis BETWEEN :startMillis AND :endMillis ORDER BY dateMillis ASC")
+    @Query("SELECT * FROM events WHERE isArchived = 0 AND dateMillis BETWEEN :startMillis AND :endMillis ORDER BY dateMillis ASC")
     fun getEventsInDateRange(startMillis: Long, endMillis: Long) : LiveData<List<EventEntity>>
     
-    @Query("SELECT * FROM events WHERE dateMillis >= :afterMillis ORDER BY dateMillis ASC")
+    @Query("SELECT * FROM events WHERE isArchived = 0 AND dateMillis >= :afterMillis ORDER BY dateMillis ASC")
     fun getEventsAfterDate(afterMillis: Long) : LiveData<List<EventEntity>>
     
-    @Query("SELECT * FROM events WHERE dateMillis < :beforeMillis ORDER BY dateMillis DESC")
+    @Query("SELECT * FROM events WHERE isArchived = 0 AND dateMillis < :beforeMillis ORDER BY dateMillis DESC")
     fun getEventsBeforeDate(beforeMillis: Long) : LiveData<List<EventEntity>>
     
     // Archive-related queries

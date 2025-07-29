@@ -7,4 +7,9 @@ data class Event(
     val notifyMe: Boolean = false,
     val reminderOffsetDays: Int = ReminderOffset.ONE_DAY.days,
     val isArchived: Boolean = false
-)
+) {
+    init {
+        require(reminderOffsetDays > 0) { "Reminder offset must be positive" }
+        require(title.isNotBlank()) { "Event title cannot be blank" }
+    }
+}

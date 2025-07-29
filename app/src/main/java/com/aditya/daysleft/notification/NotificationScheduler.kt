@@ -3,6 +3,7 @@ package com.aditya.daysleft.notification
 import android.content.Context
 import androidx.work.*
 import com.aditya.daysleft.domain.model.Event
+import com.aditya.daysleft.presentation.settings.SettingsManager
 import java.util.concurrent.TimeUnit
 import java.util.Calendar
 
@@ -48,14 +49,20 @@ class NotificationScheduler(private val context: Context) {
         // Cancel existing daily digest
         workManager.cancelAllWorkByTag(DAILY_DIGEST_TAG)
         
-        // Schedule daily digest at 8:00 AM
+        val settingsManager = SettingsManager(context)
+        if (!settingsManager.isDailyDigestEnabled()) {
+            return
+        }
+        
+        // Schedule daily digest at configured time (default 8:00 AM)
+        val (hour, minute) = settingsManager.getDailyDigestTime()
         val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 8)
-            set(Calendar.MINUTE, 0)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
             
-            // If 8 AM today has passed, schedule for tomorrow
+            // If the configured time today has passed, schedule for tomorrow
             if (timeInMillis <= System.currentTimeMillis()) {
                 add(Calendar.DAY_OF_MONTH, 1)
             }

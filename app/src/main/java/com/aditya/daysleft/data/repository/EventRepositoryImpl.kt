@@ -27,21 +27,22 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 }
             }
             FilterOption.UPCOMING -> {
-                // Get events starting from tomorrow (start of tomorrow)
+                // Get events starting from tomorrow (start of tomorrow), excluding archived
                 val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)
                 dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive of startOfTomorrow
             }
             FilterOption.UPCOMING_ONLY -> {
-                // Get events from today onwards (includes today and future)
+                // Get events from today onwards (includes today and future), excluding archived
                 val startOfToday = DaysLeftUtil.getStartOfToday()
                 dao.getEventsAfterDate(startOfToday - 1) // -1 to make it inclusive of startOfToday
             }
             FilterOption.PAST -> {
-                // Use start of today to exclude today's events from past
+                // Use start of today to exclude today's events from past, excluding archived
                 val startOfToday = DaysLeftUtil.getStartOfToday()
                 dao.getEventsBeforeDate(startOfToday)
             }
             FilterOption.NEXT_7_DAYS -> {
+                // Get events in next 7 days, excluding archived
                 val (start, end) = DaysLeftUtil.getNext7DaysRange()
                 dao.getEventsInDateRange(start, end)
             }
