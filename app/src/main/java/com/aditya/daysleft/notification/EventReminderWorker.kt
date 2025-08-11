@@ -25,14 +25,12 @@ class EventReminderWorker(
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
             val eventId = inputData.getInt("event_id", -1)
-            val eventTitle = inputData.getString("event_title") ?: return@withContext Result.failure()
+            val eventTitle = inputData.getString("event_title")
             val eventDateMillis = inputData.getLong("event_date", -1L)
             val reminderDays = inputData.getInt("reminder_days", 1)
             val isImportant = inputData.getBoolean("is_important", false)
-            val isImportantDaily = inputData.getBoolean("is_important_daily", false)
-            val reminderType = inputData.getString("reminder_type") ?: "user_preference"
             
-            if (eventId == -1 || eventDateMillis == -1L) {
+            if (eventId == -1 || eventDateMillis == -1L || eventTitle.isNullOrBlank()) {
                 return@withContext Result.failure()
             }
             
@@ -47,7 +45,7 @@ class EventReminderWorker(
             }
             
             // Show the notification
-            showReminderNotification(eventTitle, eventDateMillis, reminderDays, isImportant, isImportantDaily, reminderType)
+            showReminderNotification(eventTitle, eventDateMillis, reminderDays, isImportant)
             
             Result.success()
         } catch (e: Exception) {
@@ -59,9 +57,7 @@ class EventReminderWorker(
         eventTitle: String, 
         eventDateMillis: Long, 
         reminderDays: Int, 
-        isImportant: Boolean,
-        isImportantDaily: Boolean,
-        reminderType: String
+        isImportant: Boolean
     ) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -79,31 +75,19 @@ class EventReminderWorker(
         val daysLeft = DaysLeftUtil.daysLeft(eventDateMillis)
         
         val title = when {
-            isImportantDaily -> "⭐ Important Event Reminder"
-            reminderType == "automatic_1day" -> "📅 Event Tomorrow!"
-            reminderType == "automatic_3day" -> "📅 Event in 3 Days"
-            isImportant -> when (reminderDays) {
-                1 -> "⭐ Important Event Tomorrow!"
-                else -> "⭐ Important Event in $reminderDays days"
-            }
-            else -> when (reminderDays) {
-                1 -> "📅 Event Tomorrow!"
-                else -> "📅 Event in $reminderDays days"
-            }
+            daysLeft == 0L -> if (isImportant) "⭐ Important Event Today!" else "📅 Event Today!"
+            daysLeft == 1L -> if (isImportant) "⭐ Important Event Tomorrow!" else "📅 Event Tomorrow!"
+            isImportant -> "⭐ Important Event in $daysLeft days"
+            else -> "📅 Event in $daysLeft days"
         }
         
         val content = when {
-            isImportantDaily -> when {
-                daysLeft == 0L -> "🚨 $eventTitle is TODAY! ($eventDate)"
-                daysLeft == 1L -> "⏰ $eventTitle is TOMORROW ($eventDate)"
-                else -> "📌 $eventTitle is in $daysLeft days ($eventDate)"
-            }
-            daysLeft == 0L -> "🎯 $eventTitle is TODAY! ($eventDate)"
-            daysLeft == 1L -> "⏰ $eventTitle is TOMORROW ($eventDate)"
-            else -> "📅 $eventTitle is in $daysLeft days ($eventDate)"
+            daysLeft == 0L -> "$eventTitle is TODAY! ($eventDate)"
+            daysLeft == 1L -> "$eventTitle is TOMORROW ($eventDate)"
+            else -> "$eventTitle is in $daysLeft days ($eventDate)"
         }
         
-        val priority = if (isImportant || isImportantDaily || daysLeft <= 1) 
+        val priority = if (isImportant || daysLeft <= 1) 
             NotificationCompat.PRIORITY_HIGH 
         else 
             NotificationCompat.PRIORITY_DEFAULT
@@ -117,8 +101,9 @@ class EventReminderWorker(
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .apply {
-                if (isImportant || isImportantDaily || daysLeft <= 1) {
+                if (isImportant || daysLeft <= 1) {
                     setVibrate(longArrayOf(0, 300, 100, 300, 100, 300))
                     setLights(0xFFFF0000.toInt(), 1000, 1000)
                     setDefaults(NotificationCompat.DEFAULT_SOUND)
@@ -126,8 +111,8 @@ class EventReminderWorker(
             }
             .build()
             
-        // Use a unique notification ID combining event title and reminder type
-        val notificationId = "$eventTitle-$reminderType-$reminderDays".hashCode()
+        // Use a simpler notification ID based on event title hash
+        val notificationId = eventTitle.hashCode()
         NotificationManagerCompat.from(applicationContext).notify(
             notificationId, 
             notification

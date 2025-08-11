@@ -25,6 +25,7 @@ object NotificationChannels {
                 setBypassDnd(false)
                 setShowBadge(true)
                 lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI, null)
             }
             
             // Daily Digest Channel
