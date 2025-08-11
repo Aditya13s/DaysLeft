@@ -14,11 +14,25 @@ class NotificationScheduler(private val context: Context) {
     fun scheduleEventReminder(event: Event) {
         if (!event.notifyMe || event.isArchived) return
         
-        // Cancel any existing reminder for this event
+        // Cancel any existing reminders for this event
         cancelEventReminder(event.id)
         
-        val reminderTime = event.dateMillis - (event.reminderOffsetDays * 24 * 60 * 60 * 1000L)
         val currentTime = System.currentTimeMillis()
+        
+        // Schedule original reminder based on user's preference
+        scheduleOriginalReminder(event, currentTime)
+        
+        // Schedule additional automatic reminders (1 day and 3 days before)
+        scheduleAutomaticReminders(event, currentTime)
+        
+        // For important events, also schedule daily reminders
+        if (event.isImportant && event.dateMillis > currentTime) {
+            scheduleImportantEventDailyReminders(event)
+        }
+    }
+    
+    private fun scheduleOriginalReminder(event: Event, currentTime: Long) {
+        val reminderTime = event.dateMillis - (event.reminderOffsetDays * 24 * 60 * 60 * 1000L)
         
         // Only schedule if the reminder time is in the future
         if (reminderTime > currentTime) {
@@ -30,21 +44,69 @@ class NotificationScheduler(private val context: Context) {
                 .putLong("event_date", event.dateMillis)
                 .putInt("reminder_days", event.reminderOffsetDays)
                 .putBoolean("is_important", event.isImportant)
+                .putString("reminder_type", "user_preference")
                 .build()
             
             val reminderWork = OneTimeWorkRequestBuilder<EventReminderWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .setInputData(inputData)
                 .addTag(getEventReminderTag(event.id))
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                        .setRequiresBatteryNotLow(false)
+                        .setRequiresCharging(false)
+                        .setRequiresDeviceIdle(false)
+                        .build()
+                )
                 .build()
             
             workManager.enqueue(reminderWork)
         }
-        
-        // For important events, also schedule daily reminders
-        if (event.isImportant && event.dateMillis > currentTime) {
-            scheduleImportantEventDailyReminders(event)
+    }
+    
+    private fun scheduleAutomaticReminders(event: Event, currentTime: Long) {
+        // Schedule 1-day before reminder (if different from user preference and in future)
+        val oneDayBefore = event.dateMillis - (1 * 24 * 60 * 60 * 1000L)
+        if (oneDayBefore > currentTime && event.reminderOffsetDays != 1) {
+            scheduleAdditionalReminder(event, oneDayBefore, currentTime, 1, "automatic_1day")
         }
+        
+        // Schedule 3-day before reminder (if different from user preference and in future)
+        val threeDaysBefore = event.dateMillis - (3 * 24 * 60 * 60 * 1000L)
+        if (threeDaysBefore > currentTime && event.reminderOffsetDays != 3) {
+            scheduleAdditionalReminder(event, threeDaysBefore, currentTime, 3, "automatic_3day")
+        }
+    }
+    
+    private fun scheduleAdditionalReminder(event: Event, reminderTime: Long, currentTime: Long, 
+                                         reminderDays: Int, reminderType: String) {
+        val delay = reminderTime - currentTime
+        
+        val inputData = Data.Builder()
+            .putInt("event_id", event.id)
+            .putString("event_title", event.title)
+            .putLong("event_date", event.dateMillis)
+            .putInt("reminder_days", reminderDays)
+            .putBoolean("is_important", event.isImportant)
+            .putString("reminder_type", reminderType)
+            .build()
+        
+        val reminderWork = OneTimeWorkRequestBuilder<EventReminderWorker>()
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setInputData(inputData)
+            .addTag(getEventReminderTag(event.id))
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .setRequiresBatteryNotLow(false)
+                    .setRequiresCharging(false)
+                    .setRequiresDeviceIdle(false)
+                    .build()
+            )
+            .build()
+        
+        workManager.enqueue(reminderWork)
     }
     
     fun cancelEventReminder(eventId: Int) {
@@ -80,6 +142,14 @@ class NotificationScheduler(private val context: Context) {
         val dailyDigestWork = PeriodicWorkRequestBuilder<DailyDigestWorker>(1, TimeUnit.DAYS)
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .addTag(DAILY_DIGEST_TAG)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .setRequiresBatteryNotLow(false)
+                    .setRequiresCharging(false)
+                    .setRequiresDeviceIdle(false)
+                    .build()
+            )
             .build()
         
         workManager.enqueue(dailyDigestWork)
@@ -96,6 +166,14 @@ class NotificationScheduler(private val context: Context) {
         // Schedule auto-archiving to run daily at midnight
         val autoArchiveWork = PeriodicWorkRequestBuilder<AutoArchiveWorker>(1, TimeUnit.DAYS)
             .addTag(AUTO_ARCHIVE_TAG)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .setRequiresBatteryNotLow(false)
+                    .setRequiresCharging(false)
+                    .setRequiresDeviceIdle(false)
+                    .build()
+            )
             .build()
         
         workManager.enqueue(autoArchiveWork)
@@ -145,6 +223,14 @@ class NotificationScheduler(private val context: Context) {
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .setInputData(inputData)
                 .addTag(getImportantEventDailyTag(event.id))
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                        .setRequiresBatteryNotLow(false)
+                        .setRequiresCharging(false)
+                        .setRequiresDeviceIdle(false)
+                        .build()
+                )
                 .build()
             
             workManager.enqueue(importantDailyWork)
