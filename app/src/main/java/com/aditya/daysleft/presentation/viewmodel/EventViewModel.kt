@@ -72,4 +72,18 @@ class EventViewModel(
         val thirtyDaysAgo = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L)
         useCases.archiveOldEvents(thirtyDaysAgo)
     }
+    
+    fun rescheduleAllReminders() = viewModelScope.launch {
+        val scheduler = NotificationScheduler(getApplication())
+        val currentTime = System.currentTimeMillis()
+        
+        // Get all events with reminders and reschedule them
+        useCases.getEventsWithReminders(currentTime).observeForever { events ->
+            events?.forEach { event ->
+                if (event.notifyMe && !event.isArchived && event.dateMillis > currentTime) {
+                    scheduler.scheduleEventReminder(event)
+                }
+            }
+        }
+    }
 }
