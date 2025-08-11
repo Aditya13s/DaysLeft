@@ -17,22 +17,28 @@ object NotificationChannels {
             val upcomingEventsChannel = NotificationChannel(
                 UPCOMING_EVENTS_CHANNEL_ID,
                 "Upcoming Events",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Notifications for upcoming events"
+                description = "Notifications for upcoming events and reminders"
                 enableVibration(true)
                 enableLights(true)
+                setBypassDnd(false)
+                setShowBadge(true)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
             }
             
             // Daily Digest Channel
             val dailyDigestChannel = NotificationChannel(
                 DAILY_DIGEST_CHANNEL_ID,
                 "Daily Digest",
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Daily summary of events"
+                description = "Daily summary of events and reminders"
                 enableVibration(false)
                 enableLights(false)
+                setBypassDnd(false)
+                setShowBadge(true)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
             }
             
             notificationManager.createNotificationChannel(upcomingEventsChannel)

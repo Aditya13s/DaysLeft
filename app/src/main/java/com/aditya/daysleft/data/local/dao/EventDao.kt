@@ -62,4 +62,7 @@ interface EventDao {
     
     @Query("SELECT COUNT(*) FROM events WHERE isArchived = 0 AND isImportant = 1 AND dateMillis >= :startMillis")
     suspend fun countImportantUpcomingEvents(startMillis: Long): Int
+    
+    @Query("SELECT * FROM events WHERE id = :eventId LIMIT 1")
+    suspend fun getEventById(eventId: Int): EventEntity?
 }

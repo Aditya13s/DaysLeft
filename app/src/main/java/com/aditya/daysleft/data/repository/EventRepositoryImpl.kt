@@ -139,4 +139,17 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
         }
         return liveData
     }
+    
+    override suspend fun getEventById(eventId: Int): Event? {
+        val entity = dao.getEventById(eventId) ?: return null
+        return Event(
+            id = entity.id,
+            title = entity.title,
+            dateMillis = entity.dateMillis,
+            notifyMe = entity.notifyMe,
+            reminderOffsetDays = entity.reminderOffsetDays,
+            isArchived = entity.isArchived,
+            isImportant = entity.isImportant
+        )
+    }
 }

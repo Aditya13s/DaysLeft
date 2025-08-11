@@ -266,5 +266,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupNotificationScheduling() {
         val notificationScheduler = NotificationScheduler(this)
         notificationScheduler.scheduleDailyDigest()
+        
+        // Reschedule all event reminders to ensure they work after permission grant
+        eventViewModel.rescheduleAllReminders()
     }
 }
