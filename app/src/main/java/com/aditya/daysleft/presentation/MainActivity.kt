@@ -1,9 +1,15 @@
 package com.aditya.daysleft.presentation
 
+import android.Manifest
+import android.app.TimePickerDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -20,8 +26,13 @@ import com.aditya.daysleft.domain.usecases.DeleteEvent
 import com.aditya.daysleft.domain.usecases.EventUseCases
 import com.aditya.daysleft.domain.usecases.GetEvents
 import com.aditya.daysleft.domain.usecases.UpdateEvent
+import com.aditya.daysleft.domain.usecases.RestoreEvent
+import com.aditya.daysleft.domain.usecases.ArchiveOldEvents
+import com.aditya.daysleft.domain.usecases.GetEventsWithReminders
+import com.aditya.daysleft.notification.NotificationScheduler
 import com.aditya.daysleft.presentation.addevent.AddEditEventBottomSheet
 import com.aditya.daysleft.presentation.eventlist.EventAdapter
+import com.aditya.daysleft.presentation.settings.SettingsManager
 import com.aditya.daysleft.presentation.viewmodel.EventViewModel
 import com.aditya.daysleft.presentation.viewmodel.EventViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,6 +44,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var eventViewModel: EventViewModel
     private lateinit var adapter: EventAdapter
     private var recentlyDeletedEvent: Event? = null
+
+    // Notification permission launcher
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, ensure notification scheduling
+            setupNotificationScheduling()
+        } else {
+            // Permission denied, show a snackbar explaining the impact
+            Snackbar.make(
+                binding.root,
+                "Notification permission is required for event reminders",
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         observeEvents()
         setupListeners()
+        checkNotificationPermission()
     }
 
     private fun observeEvents() {
@@ -65,7 +94,10 @@ class MainActivity : AppCompatActivity() {
             getEvents = GetEvents(repository),
             addEvent = AddEvent(repository),
             updateEvent = UpdateEvent(repository),
-            deleteEvent = DeleteEvent(repository)
+            deleteEvent = DeleteEvent(repository),
+            restoreEvent = RestoreEvent(repository),
+            archiveOldEvents = ArchiveOldEvents(repository),
+            getEventsWithReminders = GetEventsWithReminders(repository)
         )
         val factory = EventViewModelFactory(application, eventUseCases)
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
@@ -90,7 +122,9 @@ class MainActivity : AppCompatActivity() {
         val options = arrayOf(
             "Upcoming Events",
             "Past Events",
-            "All Events"
+            "All Events",
+            "Archived Events",
+            "Settings"
         )
         
         MaterialAlertDialogBuilder(this)
@@ -109,6 +143,14 @@ class MainActivity : AppCompatActivity() {
                         binding.textMainTitle.text = "All Events"
                         eventViewModel.setFilterOption(FilterOption.ALL)
                     }
+                    3 -> {
+                        binding.textMainTitle.text = "Archived Events"
+                        eventViewModel.setFilterOption(FilterOption.ARCHIVED)
+                    }
+                    4 -> {
+                        showSettingsDialog()
+                        return@setItems
+                    }
                 }
                 // Re-observe to update the display
                 eventViewModel.events.observe(this) { events ->
@@ -123,7 +165,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = EventAdapter(
             onEdit = { event -> launchEditEvent(event) },
-            onDelete = { event -> handleDeleteEvent(event) })
+            onDelete = { event -> handleDeleteEvent(event) },
+            onRestore = { event -> handleRestoreEvent(event) }
+        )
         binding.eventRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.eventRecyclerView.adapter = adapter
     }
@@ -141,10 +185,89 @@ class MainActivity : AppCompatActivity() {
         AddEditEventBottomSheet.newInstance(event)
             .show(supportFragmentManager, "EditEventBottomSheet")
     }
+    
+    private fun handleRestoreEvent(event: Event) {
+        eventViewModel.restoreEvent(event.id)
+        Snackbar.make(binding.root, "Event restored", Snackbar.LENGTH_SHORT).show()
+    }
+    
+    private fun showSettingsDialog() {
+        val settingsManager = SettingsManager(this)
+        val (currentHour, currentMinute) = settingsManager.getDailyDigestTime()
+        val isDigestEnabled = settingsManager.isDailyDigestEnabled()
+        
+        val settingsOptions = arrayOf(
+            "Daily Digest: ${if (isDigestEnabled) "Enabled" else "Disabled"}",
+            "Digest Time: ${String.format("%02d:%02d", currentHour, currentMinute)}"
+        )
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Settings")
+            .setItems(settingsOptions) { _, which ->
+                when (which) {
+                    0 -> {
+                        // Toggle daily digest
+                        val newState = !isDigestEnabled
+                        settingsManager.setDailyDigestEnabled(newState)
+                        val notificationScheduler = NotificationScheduler(this)
+                        if (newState) {
+                            notificationScheduler.scheduleDailyDigest()
+                        } else {
+                            notificationScheduler.cancelDailyDigest()
+                        }
+                        Snackbar.make(binding.root, 
+                            "Daily digest ${if (newState) "enabled" else "disabled"}", 
+                            Snackbar.LENGTH_SHORT).show()
+                    }
+                    1 -> {
+                        // Change digest time
+                        TimePickerDialog(this, { _, hour, minute ->
+                            settingsManager.setDailyDigestTime(hour, minute)
+                            val notificationScheduler = NotificationScheduler(this)
+                            notificationScheduler.scheduleDailyDigest()
+                            Snackbar.make(binding.root, 
+                                "Daily digest time updated to ${String.format("%02d:%02d", hour, minute)}", 
+                                Snackbar.LENGTH_SHORT).show()
+                        }, currentHour, currentMinute, true).show()
+                    }
+                }
+            }
+            .setNegativeButton("Close", null)
+            .show()
+    }
 
     private fun updateEmptyState(events: List<Event>) {
         val isEmpty = events.isEmpty()
         binding.emptyStateContainer.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.eventRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                    setupNotificationScheduling()
+                }
+                else -> {
+                    // Request permission
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            // For older Android versions, permission is granted at install time
+            setupNotificationScheduling()
+        }
+    }
+
+    private fun setupNotificationScheduling() {
+        val notificationScheduler = NotificationScheduler(this)
+        notificationScheduler.scheduleDailyDigest()
+        
+        // Reschedule all event reminders to ensure they work after permission grant
+        eventViewModel.rescheduleAllReminders()
     }
 }

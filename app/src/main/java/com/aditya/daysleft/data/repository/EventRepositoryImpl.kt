@@ -22,28 +22,32 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
         val source = when (filterOption) {
             FilterOption.ALL -> {
                 when (sortOption) {
-                    SortOption.DATE -> dao.getEventsSortedByDate()
-                    SortOption.DAYS_LEFT -> dao.getEventsSortedByDate() // We'll sort by days left in memory
+                    SortOption.DATE -> dao.getActiveEvents() // Only show active events by default
+                    SortOption.DAYS_LEFT -> dao.getActiveEvents() // We'll sort by days left in memory
                 }
             }
             FilterOption.UPCOMING -> {
-                // Get events starting from tomorrow (start of tomorrow)
+                // Get events starting from tomorrow (start of tomorrow), excluding archived
                 val startOfTomorrow = DaysLeftUtil.getStartOfToday() + (24 * 60 * 60 * 1000)
                 dao.getEventsAfterDate(startOfTomorrow - 1) // -1 to make it inclusive of startOfTomorrow
             }
             FilterOption.UPCOMING_ONLY -> {
-                // Get events from today onwards (includes today and future)
+                // Get events from today onwards (includes today and future), excluding archived
                 val startOfToday = DaysLeftUtil.getStartOfToday()
                 dao.getEventsAfterDate(startOfToday - 1) // -1 to make it inclusive of startOfToday
             }
             FilterOption.PAST -> {
-                // Use start of today to exclude today's events from past
+                // Use start of today to exclude today's events from past, excluding archived
                 val startOfToday = DaysLeftUtil.getStartOfToday()
                 dao.getEventsBeforeDate(startOfToday)
             }
             FilterOption.NEXT_7_DAYS -> {
+                // Get events in next 7 days, excluding archived
                 val (start, end) = DaysLeftUtil.getNext7DaysRange()
                 dao.getEventsInDateRange(start, end)
+            }
+            FilterOption.ARCHIVED -> {
+                dao.getArchivedEvents()
             }
         }
         
@@ -52,7 +56,11 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                 Event(
                     id = entity.id, 
                     title = entity.title, 
-                    dateMillis = entity.dateMillis
+                    dateMillis = entity.dateMillis,
+                    notifyMe = entity.notifyMe,
+                    reminderOffsetDays = entity.reminderOffsetDays,
+                    isArchived = entity.isArchived,
+                    isImportant = entity.isImportant
                 )
             }
             
@@ -68,14 +76,80 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
     }
 
     override suspend fun addEvent(event: Event) {
-        dao.addEvent(EventEntity(event.id, event.title, event.dateMillis))
+        dao.addEvent(EventEntity(
+            event.id, 
+            event.title, 
+            event.dateMillis,
+            event.notifyMe,
+            event.reminderOffsetDays,
+            event.isArchived,
+            event.isImportant
+        ))
     }
 
     override suspend fun updateEvent(event: Event) {
-        dao.updateEvent(EventEntity(event.id, event.title, event.dateMillis))
+        dao.updateEvent(EventEntity(
+            event.id, 
+            event.title, 
+            event.dateMillis,
+            event.notifyMe,
+            event.reminderOffsetDays,
+            event.isArchived,
+            event.isImportant
+        ))
     }
 
     override suspend fun deleteEvent(event: Event) {
-        dao.deleteEvent(EventEntity(event.id, event.title, event.dateMillis))
+        dao.deleteEvent(EventEntity(
+            event.id, 
+            event.title, 
+            event.dateMillis,
+            event.notifyMe,
+            event.reminderOffsetDays,
+            event.isArchived,
+            event.isImportant
+        ))
+    }
+    
+    override suspend fun archiveOldEvents(cutoffMillis: Long) {
+        dao.archiveOldEvents(cutoffMillis)
+    }
+    
+    override suspend fun restoreEvent(eventId: Int) {
+        dao.restoreEvent(eventId)
+    }
+    
+    override fun getEventsWithReminders(currentTimeMillis: Long): LiveData<List<Event>> {
+        val liveData = MediatorLiveData<List<Event>>()
+        val source = dao.getEventsWithReminders(currentTimeMillis)
+        
+        liveData.addSource(source) { entities: List<EventEntity> ->
+            val events = entities.map { entity ->
+                Event(
+                    id = entity.id, 
+                    title = entity.title, 
+                    dateMillis = entity.dateMillis,
+                    notifyMe = entity.notifyMe,
+                    reminderOffsetDays = entity.reminderOffsetDays,
+                    isArchived = entity.isArchived,
+                    isImportant = entity.isImportant
+                )
+            }
+            liveData.value = events
+        }
+        return liveData
+    }
+    
+    override suspend fun getEventById(eventId: Int): Event? {
+        val entity = dao.getEventById(eventId) ?: return null
+        return Event(
+            id = entity.id,
+            title = entity.title,
+            dateMillis = entity.dateMillis,
+            notifyMe = entity.notifyMe,
+            reminderOffsetDays = entity.reminderOffsetDays,
+            isArchived = entity.isArchived,
+            isImportant = entity.isImportant
+        )
     }
 }

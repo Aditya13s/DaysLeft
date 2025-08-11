@@ -11,8 +11,10 @@ import androidx.fragment.app.activityViewModels
 import com.aditya.daysleft.R
 import com.aditya.daysleft.databinding.BottomSheetAddEditEventBinding
 import com.aditya.daysleft.domain.model.Event
+import com.aditya.daysleft.domain.model.ReminderOffset
 import com.aditya.daysleft.presentation.viewmodel.EventViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -27,6 +29,7 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
 
     private var eventId: Int = 0
     private var selectedDateMillis: Long = 0L
+    private var selectedReminderOffset: ReminderOffset = ReminderOffset.ONE_DAY
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -39,12 +42,21 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
         eventId = arguments?.getInt("event_id", 0) ?: 0
         val eventTitle = arguments?.getString("event_title") ?: ""
         val eventDate = arguments?.getLong("event_date", 0L) ?: 0L
+        val notifyMe = arguments?.getBoolean("notify_me", false) ?: false
+        val reminderOffsetDays = arguments?.getInt("reminder_offset_days", ReminderOffset.ONE_DAY.days) ?: ReminderOffset.ONE_DAY.days
+        val isImportant = arguments?.getBoolean("is_important", false) ?: false
 
         if (eventId != 0) {
             binding.editTextTitle.setText(eventTitle)
             selectedDateMillis = eventDate
             binding.buttonDate.text = formatDate(selectedDateMillis)
             binding.buttonSave.text = getString(R.string.update)
+            
+            // Set reminder configuration
+            binding.switchNotifyMe.isChecked = notifyMe
+            binding.switchImportant.isChecked = isImportant
+            selectedReminderOffset = ReminderOffset.values().find { it.days == reminderOffsetDays } ?: ReminderOffset.ONE_DAY
+            binding.buttonReminderOffset.text = selectedReminderOffset.displayName
         }
 
         // Automatically show keyboard for the title field
@@ -55,6 +67,7 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.buttonDate.setOnClickListener { showDatePicker() }
+        binding.buttonReminderOffset.setOnClickListener { showReminderOffsetPicker() }
 
         binding.buttonSave.setOnClickListener {
             val title = binding.editTextTitle.text.toString().trim()
@@ -63,7 +76,14 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
                     .show()
                 return@setOnClickListener
             }
-            val event = Event(id = eventId, title = title, dateMillis = selectedDateMillis)
+            val event = Event(
+                id = eventId, 
+                title = title, 
+                dateMillis = selectedDateMillis,
+                notifyMe = binding.switchNotifyMe.isChecked,
+                reminderOffsetDays = selectedReminderOffset.days,
+                isImportant = binding.switchImportant.isChecked
+            )
             if (eventId == 0) eventViewModel.addEvent(event) else eventViewModel.updateEvent(event)
             dismiss()
         }
@@ -86,6 +106,21 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
         }, year, month, day)
         datePickerDialog.datePicker.minDate = now.timeInMillis // Prevent selecting past dates
         datePickerDialog.show()
+    }
+    
+    private fun showReminderOffsetPicker() {
+        val options = ReminderOffset.values().map { it.displayName }.toTypedArray()
+        val selectedIndex = ReminderOffset.values().indexOf(selectedReminderOffset)
+        
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Reminder Time")
+            .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
+                selectedReminderOffset = ReminderOffset.values()[which]
+                binding.buttonReminderOffset.text = selectedReminderOffset.displayName
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun formatDate(millis: Long): String {
@@ -114,6 +149,9 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
                 args.putInt("event_id", event.id)
                 args.putString("event_title", event.title)
                 args.putLong("event_date", event.dateMillis)
+                args.putBoolean("notify_me", event.notifyMe)
+                args.putInt("reminder_offset_days", event.reminderOffsetDays)
+                args.putBoolean("is_important", event.isImportant)
             }
             fragment.arguments = args
             return fragment

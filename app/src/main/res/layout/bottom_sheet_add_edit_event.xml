@@ -64,6 +64,95 @@
         app:strokeWidth="2dp"
         app:strokeColor="?attr/colorOutline" />
 
+    <!-- Reminder Configuration Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:background="?attr/colorSurfaceContainerLow"
+        android:padding="16dp"
+        app:cornerRadius="12dp">
+
+        <!-- Reminder Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_event"
+                android:tint="?attr/colorPrimary"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Notify me"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?attr/colorOnSurface" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchNotifyMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!-- Important Event Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="12dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_event"
+                android:tint="?attr/colorSecondary"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Important event (daily reminders)"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?attr/colorOnSurface" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchImportant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!-- Reminder Offset Selector -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonReminderOffset"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="1 day before"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_marginTop="12dp"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_event"
+            app:iconTint="?attr/colorOnSurfaceVariant"
+            app:iconSize="18dp"
+            app:cornerRadius="8dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant" />
+
+    </LinearLayout>
+
     <!-- Enhanced Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
