@@ -10,5 +10,6 @@ data class EventEntity(
     val dateMillis: Long,
     val notifyMe: Boolean = false,
     val reminderOffsetDays: Int = 1,
-    val isArchived: Boolean = false
+    val isArchived: Boolean = false,
+    val isImportant: Boolean = false
 )

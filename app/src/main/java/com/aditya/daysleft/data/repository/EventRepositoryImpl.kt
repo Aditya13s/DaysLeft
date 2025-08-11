@@ -59,7 +59,8 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                     dateMillis = entity.dateMillis,
                     notifyMe = entity.notifyMe,
                     reminderOffsetDays = entity.reminderOffsetDays,
-                    isArchived = entity.isArchived
+                    isArchived = entity.isArchived,
+                    isImportant = entity.isImportant
                 )
             }
             
@@ -81,7 +82,8 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
             event.dateMillis,
             event.notifyMe,
             event.reminderOffsetDays,
-            event.isArchived
+            event.isArchived,
+            event.isImportant
         ))
     }
 
@@ -92,7 +94,8 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
             event.dateMillis,
             event.notifyMe,
             event.reminderOffsetDays,
-            event.isArchived
+            event.isArchived,
+            event.isImportant
         ))
     }
 
@@ -103,7 +106,8 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
             event.dateMillis,
             event.notifyMe,
             event.reminderOffsetDays,
-            event.isArchived
+            event.isArchived,
+            event.isImportant
         ))
     }
     
@@ -127,7 +131,8 @@ class EventRepositoryImpl(private val dao: EventDao) : EventRepository {
                     dateMillis = entity.dateMillis,
                     notifyMe = entity.notifyMe,
                     reminderOffsetDays = entity.reminderOffsetDays,
-                    isArchived = entity.isArchived
+                    isArchived = entity.isArchived,
+                    isImportant = entity.isImportant
                 )
             }
             liveData.value = events

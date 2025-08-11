@@ -55,4 +55,11 @@ interface EventDao {
     // Reminder-related queries
     @Query("SELECT * FROM events WHERE notifyMe = 1 AND isArchived = 0 AND dateMillis > :currentTimeMillis ORDER BY dateMillis ASC")
     fun getEventsWithReminders(currentTimeMillis: Long) : LiveData<List<EventEntity>>
+    
+    // Count queries for notifications
+    @Query("SELECT COUNT(*) FROM events WHERE isArchived = 0 AND dateMillis BETWEEN :startMillis AND :endMillis")
+    suspend fun countEventsInDateRange(startMillis: Long, endMillis: Long): Int
+    
+    @Query("SELECT COUNT(*) FROM events WHERE isArchived = 0 AND isImportant = 1 AND dateMillis >= :startMillis")
+    suspend fun countImportantUpcomingEvents(startMillis: Long): Int
 }

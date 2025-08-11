@@ -26,14 +26,18 @@ class DailyDigestWorker(
         try {
             val dao = AppDatabase.getInstance(applicationContext).eventDao()
             
-            // Get events for the next 7 days
+            // Get events for the next 7 days (upcoming only, not past)
             val (startRange, endRange) = DaysLeftUtil.getNext7DaysRange()
+            val startOfToday = DaysLeftUtil.getStartOfToday()
             
-            // Use a simple query to get count of upcoming events
-            val upcomingEventsCount = getUpcomingEventsCount(startRange, endRange)
+            // Count only upcoming events from today onwards within next 7 days
+            val upcomingEventsCount = dao.countEventsInDateRange(startOfToday, endRange)
             
-            if (upcomingEventsCount > 0) {
-                showDailyDigest(upcomingEventsCount)
+            // Count important upcoming events from today onwards
+            val importantEventsCount = dao.countImportantUpcomingEvents(startOfToday)
+            
+            if (upcomingEventsCount > 0 || importantEventsCount > 0) {
+                showDailyDigest(upcomingEventsCount, importantEventsCount)
             }
             
             Result.success()
@@ -42,18 +46,7 @@ class DailyDigestWorker(
         }
     }
     
-    private suspend fun getUpcomingEventsCount(startTime: Long, endTime: Long): Int {
-        return try {
-            val dao = AppDatabase.getInstance(applicationContext).eventDao()
-            // For simplicity, we'll use a placeholder count for now
-            // In a real implementation, you would add a count query to the DAO
-            3 // This represents "some events this week"
-        } catch (e: Exception) {
-            0
-        }
-    }
-    
-    private fun showDailyDigest(eventCount: Int) {
+    private fun showDailyDigest(upcomingEventCount: Int, importantEventCount: Int) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -66,16 +59,40 @@ class DailyDigestWorker(
         )
         
         val title = "Daily Digest"
-        val content = when (eventCount) {
-            1 -> "1 event this week"
-            else -> "$eventCount events this week"
+        val content = when {
+            importantEventCount > 0 && upcomingEventCount > 0 -> {
+                when {
+                    importantEventCount == 1 && upcomingEventCount == 1 -> "1 important event coming up"
+                    importantEventCount == 1 -> "1 important event among $upcomingEventCount events"
+                    importantEventCount == upcomingEventCount -> "$importantEventCount important events this week"
+                    else -> "$importantEventCount important events among $upcomingEventCount events"
+                }
+            }
+            importantEventCount > 0 -> {
+                when (importantEventCount) {
+                    1 -> "1 important event this week"
+                    else -> "$importantEventCount important events this week"
+                }
+            }
+            upcomingEventCount > 0 -> {
+                when (upcomingEventCount) {
+                    1 -> "1 event this week"
+                    else -> "$upcomingEventCount events this week"
+                }
+            }
+            else -> "No upcoming events"
         }
+        
+        val priority = if (importantEventCount > 0) 
+            NotificationCompat.PRIORITY_DEFAULT 
+        else 
+            NotificationCompat.PRIORITY_LOW
         
         val notification = NotificationCompat.Builder(applicationContext, NotificationChannels.DAILY_DIGEST_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_event)
             .setContentTitle(title)
             .setContentText(content)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(priority)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()

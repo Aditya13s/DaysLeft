@@ -44,6 +44,7 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
         val eventDate = arguments?.getLong("event_date", 0L) ?: 0L
         val notifyMe = arguments?.getBoolean("notify_me", false) ?: false
         val reminderOffsetDays = arguments?.getInt("reminder_offset_days", ReminderOffset.ONE_DAY.days) ?: ReminderOffset.ONE_DAY.days
+        val isImportant = arguments?.getBoolean("is_important", false) ?: false
 
         if (eventId != 0) {
             binding.editTextTitle.setText(eventTitle)
@@ -53,6 +54,7 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
             
             // Set reminder configuration
             binding.switchNotifyMe.isChecked = notifyMe
+            binding.switchImportant.isChecked = isImportant
             selectedReminderOffset = ReminderOffset.values().find { it.days == reminderOffsetDays } ?: ReminderOffset.ONE_DAY
             binding.buttonReminderOffset.text = selectedReminderOffset.displayName
         }
@@ -79,7 +81,8 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
                 title = title, 
                 dateMillis = selectedDateMillis,
                 notifyMe = binding.switchNotifyMe.isChecked,
-                reminderOffsetDays = selectedReminderOffset.days
+                reminderOffsetDays = selectedReminderOffset.days,
+                isImportant = binding.switchImportant.isChecked
             )
             if (eventId == 0) eventViewModel.addEvent(event) else eventViewModel.updateEvent(event)
             dismiss()
@@ -148,6 +151,7 @@ class AddEditEventBottomSheet : BottomSheetDialogFragment() {
                 args.putLong("event_date", event.dateMillis)
                 args.putBoolean("notify_me", event.notifyMe)
                 args.putInt("reminder_offset_days", event.reminderOffsetDays)
+                args.putBoolean("is_important", event.isImportant)
             }
             fragment.arguments = args
             return fragment

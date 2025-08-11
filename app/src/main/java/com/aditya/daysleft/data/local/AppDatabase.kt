@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aditya.daysleft.data.local.dao.EventDao
 import com.aditya.daysleft.data.local.entity.EventEntity
 
-@Database(entities = [EventEntity::class], version = 2)
+@Database(entities = [EventEntity::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
 
@@ -25,13 +25,19 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
         
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE events ADD COLUMN isImportant INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "event_db"
-                ).addMigrations(MIGRATION_1_2).build()
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
                 INSTANCE = instance
                 instance
             }
