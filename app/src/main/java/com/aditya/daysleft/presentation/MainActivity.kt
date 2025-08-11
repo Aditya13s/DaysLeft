@@ -1,10 +1,15 @@
 package com.aditya.daysleft.presentation
 
+import android.Manifest
 import android.app.TimePickerDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +45,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: EventAdapter
     private var recentlyDeletedEvent: Event? = null
 
+    // Notification permission launcher
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, ensure notification scheduling
+            setupNotificationScheduling()
+        } else {
+            // Permission denied, show a snackbar explaining the impact
+            Snackbar.make(
+                binding.root,
+                "Notification permission is required for event reminders",
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -55,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         observeEvents()
         setupListeners()
+        checkNotificationPermission()
     }
 
     private fun observeEvents() {
@@ -217,5 +240,31 @@ class MainActivity : AppCompatActivity() {
         val isEmpty = events.isEmpty()
         binding.emptyStateContainer.visibility = if (isEmpty) View.VISIBLE else View.GONE
         binding.eventRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                    setupNotificationScheduling()
+                }
+                else -> {
+                    // Request permission
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            // For older Android versions, permission is granted at install time
+            setupNotificationScheduling()
+        }
+    }
+
+    private fun setupNotificationScheduling() {
+        val notificationScheduler = NotificationScheduler(this)
+        notificationScheduler.scheduleDailyDigest()
     }
 }

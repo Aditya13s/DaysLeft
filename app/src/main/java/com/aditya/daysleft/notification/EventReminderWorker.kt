@@ -28,6 +28,8 @@ class EventReminderWorker(
             val eventTitle = inputData.getString("event_title") ?: return@withContext Result.failure()
             val eventDateMillis = inputData.getLong("event_date", -1L)
             val reminderDays = inputData.getInt("reminder_days", 1)
+            val isImportant = inputData.getBoolean("is_important", false)
+            val isImportantDaily = inputData.getBoolean("is_important_daily", false)
             
             if (eventId == -1 || eventDateMillis == -1L) {
                 return@withContext Result.failure()
@@ -38,7 +40,7 @@ class EventReminderWorker(
             val repository = EventRepositoryImpl(dao)
             
             // Show the notification
-            showReminderNotification(eventTitle, eventDateMillis, reminderDays)
+            showReminderNotification(eventTitle, eventDateMillis, reminderDays, isImportant, isImportantDaily)
             
             Result.success()
         } catch (e: Exception) {
@@ -46,7 +48,13 @@ class EventReminderWorker(
         }
     }
     
-    private fun showReminderNotification(eventTitle: String, eventDateMillis: Long, reminderDays: Int) {
+    private fun showReminderNotification(
+        eventTitle: String, 
+        eventDateMillis: Long, 
+        reminderDays: Int, 
+        isImportant: Boolean,
+        isImportantDaily: Boolean
+    ) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -62,24 +70,54 @@ class EventReminderWorker(
         val eventDate = dateFormatter.format(Date(eventDateMillis))
         val daysLeft = DaysLeftUtil.daysLeft(eventDateMillis)
         
-        val title = when (reminderDays) {
-            1 -> "Event Tomorrow!"
-            else -> "Event in $reminderDays days"
+        val title = when {
+            isImportantDaily -> "Important Event Reminder"
+            isImportant -> when (reminderDays) {
+                1 -> "Important Event Tomorrow!"
+                else -> "Important Event in $reminderDays days"
+            }
+            else -> when (reminderDays) {
+                1 -> "Event Tomorrow!"
+                else -> "Event in $reminderDays days"
+            }
         }
         
         val content = when {
-            daysLeft == 0L -> "$eventTitle is today!"
-            daysLeft == 1L -> "$eventTitle is tomorrow ($eventDate)"
-            else -> "$eventTitle is in $daysLeft days ($eventDate)"
+            isImportantDaily -> when {
+                daysLeft == 0L -> "⭐ $eventTitle is today!"
+                daysLeft == 1L -> "⭐ $eventTitle is tomorrow ($eventDate)"
+                else -> "⭐ $eventTitle is in $daysLeft days ($eventDate)"
+            }
+            isImportant -> when {
+                daysLeft == 0L -> "⭐ $eventTitle is today!"
+                daysLeft == 1L -> "⭐ $eventTitle is tomorrow ($eventDate)"
+                else -> "⭐ $eventTitle is in $daysLeft days ($eventDate)"
+            }
+            else -> when {
+                daysLeft == 0L -> "$eventTitle is today!"
+                daysLeft == 1L -> "$eventTitle is tomorrow ($eventDate)"
+                else -> "$eventTitle is in $daysLeft days ($eventDate)"
+            }
         }
+        
+        val priority = if (isImportant || isImportantDaily) 
+            NotificationCompat.PRIORITY_HIGH 
+        else 
+            NotificationCompat.PRIORITY_DEFAULT
         
         val notification = NotificationCompat.Builder(applicationContext, NotificationChannels.UPCOMING_EVENTS_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_event)
             .setContentTitle(title)
             .setContentText(content)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(priority)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .apply {
+                if (isImportant || isImportantDaily) {
+                    setVibrate(longArrayOf(0, 300, 100, 300))
+                    setLights(0xFFFF0000.toInt(), 1000, 1000)
+                }
+            }
             .build()
             
         NotificationManagerCompat.from(applicationContext).notify(
