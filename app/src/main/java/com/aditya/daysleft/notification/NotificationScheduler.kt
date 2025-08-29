@@ -102,9 +102,18 @@ class NotificationScheduler(private val context: Context) {
     private fun scheduleImportantEventDailyReminders(event: Event, currentTime: Long) {
         val eventDate = event.dateMillis
         val oneDayInMillis = 24 * 60 * 60 * 1000L
+        val userPreferenceDays = event.reminderOffsetDays
         
-        // Schedule daily reminders for up to 7 days before important events
-        for (daysBeforeEvent in 1..7) {
+        // Schedule smart daily reminders for important events
+        // Only schedule for up to 3 days before to avoid notification fatigue
+        val maxDailyReminders = minOf(3, userPreferenceDays - 1)
+        
+        for (daysBeforeEvent in 1..maxDailyReminders) {
+            // Skip if this conflicts with user preference or automatic reminders
+            if (daysBeforeEvent == userPreferenceDays || daysBeforeEvent == 1 || daysBeforeEvent == 3) {
+                continue
+            }
+            
             val reminderTime = eventDate - (daysBeforeEvent * oneDayInMillis)
             
             if (reminderTime > currentTime) {
@@ -120,14 +129,19 @@ class NotificationScheduler(private val context: Context) {
     }
     
     fun cancelEventReminder(eventId: Int) {
-        // Cancel all reminders for this event (all types)
+        // Cancel all reminders for this event using a more efficient approach
+        // This will cancel all work items that have the event ID in their tag
         workManager.cancelAllWorkByTag("event_reminder_$eventId")
-        workManager.cancelAllWorkByTag("event_reminder_${eventId}_user_preference")
-        workManager.cancelAllWorkByTag("event_reminder_${eventId}_automatic_1day")
-        workManager.cancelAllWorkByTag("event_reminder_${eventId}_automatic_3day")
-        // Cancel daily reminders for important events
-        for (i in 1..7) {
-            workManager.cancelAllWorkByTag("event_reminder_${eventId}_important_daily_$i")
+        
+        // Also cancel specific reminder types to be thorough
+        val reminderTypes = listOf("user_preference", "automatic_1day", "automatic_3day")
+        reminderTypes.forEach { type ->
+            workManager.cancelAllWorkByTag(getEventReminderTag(eventId, type))
+        }
+        
+        // Cancel daily reminders for important events (limited to 3 days)
+        for (i in 1..3) {
+            workManager.cancelAllWorkByTag(getEventReminderTag(eventId, "important_daily_$i"))
         }
     }
     

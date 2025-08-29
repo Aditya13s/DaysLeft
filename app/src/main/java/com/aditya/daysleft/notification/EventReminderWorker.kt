@@ -102,7 +102,13 @@ class EventReminderWorker(
         else 
             NotificationCompat.PRIORITY_DEFAULT
         
-        val notification = NotificationCompat.Builder(applicationContext, NotificationChannels.UPCOMING_EVENTS_CHANNEL_ID)
+        // Choose appropriate notification channel based on importance and urgency
+        val channelId = when {
+            isImportant || daysLeft <= 1 -> NotificationChannels.IMPORTANT_EVENTS_CHANNEL_ID
+            else -> NotificationChannels.UPCOMING_EVENTS_CHANNEL_ID
+        }
+        
+        val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.ic_event)
             .setContentTitle(title)
             .setContentText(content)
