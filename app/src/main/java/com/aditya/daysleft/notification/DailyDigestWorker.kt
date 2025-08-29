@@ -14,6 +14,7 @@ import com.aditya.daysleft.domain.model.Event
 import com.aditya.daysleft.domain.model.FilterOption
 import com.aditya.daysleft.domain.model.SortOption
 import com.aditya.daysleft.presentation.MainActivity
+import com.aditya.daysleft.presentation.settings.SettingsManager
 import com.aditya.daysleft.utils.DaysLeftUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,6 +28,19 @@ class DailyDigestWorker(
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
+            // Check if daily digest is enabled in settings
+            val settingsManager = SettingsManager(applicationContext)
+            if (!settingsManager.isDailyDigestEnabled()) {
+                return@withContext Result.success() // Skip if disabled
+            }
+            
+            // Check if we already sent daily digest today to avoid duplicates
+            val today = DaysLeftUtil.getStartOfToday()
+            val lastDigestDate = settingsManager.getLastDailyDigestDate()
+            if (lastDigestDate >= today) {
+                return@withContext Result.success() // Already sent today
+            }
+            
             val dao = AppDatabase.getInstance(applicationContext).eventDao()
             
             // Get events for today and the next few days that have notifications enabled
@@ -53,6 +67,9 @@ class DailyDigestWorker(
             if (upcomingEvents.isNotEmpty()) {
                 // Send individual notifications for each upcoming event
                 showIndividualEventNotifications(upcomingEvents)
+                
+                // Update last digest date to prevent duplicates
+                settingsManager.setLastDailyDigestDate(System.currentTimeMillis())
             }
             
             Result.success()
@@ -80,14 +97,14 @@ class DailyDigestWorker(
             
             // Create specific, alerting notifications for each event
             val title = when {
-                daysLeft == 0 -> if (event.isImportant) "🚨 Important Event TODAY!" else "📅 Event TODAY!"
+                daysLeft == 0 -> if (event.isImportant) "🚨 URGENT: Important Event TODAY!" else "📅 Reminder: Event TODAY!"
                 daysLeft == 1 -> if (event.isImportant) "⭐ Important Event Tomorrow!" else "⏰ Event Tomorrow!"
                 event.isImportant -> "⭐ Important Event in $daysLeft days"
                 else -> "📌 Upcoming Event in $daysLeft days"
             }
             
             val content = when {
-                daysLeft == 0 -> "🚨 ${event.title} is TODAY! ($eventDate)"
+                daysLeft == 0 -> "🚨 ${event.title} is happening TODAY! ($eventDate)"
                 daysLeft == 1 -> "⏰ ${event.title} is TOMORROW ($eventDate)"
                 else -> "📌 ${event.title} is in $daysLeft days ($eventDate)"
             }

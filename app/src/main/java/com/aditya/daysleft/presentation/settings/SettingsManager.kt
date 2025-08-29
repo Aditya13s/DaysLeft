@@ -30,11 +30,22 @@ class SettingsManager(private val context: Context) {
             .apply()
     }
     
+    fun getLastDailyDigestDate(): Long {
+        return sharedPreferences.getLong(KEY_LAST_DIGEST_DATE, 0L)
+    }
+    
+    fun setLastDailyDigestDate(dateMillis: Long) {
+        sharedPreferences.edit()
+            .putLong(KEY_LAST_DIGEST_DATE, dateMillis)
+            .apply()
+    }
+    
     companion object {
         private const val PREFS_NAME = "days_left_settings"
         private const val KEY_DIGEST_HOUR = "digest_hour"
         private const val KEY_DIGEST_MINUTE = "digest_minute"
         private const val KEY_DIGEST_ENABLED = "digest_enabled"
+        private const val KEY_LAST_DIGEST_DATE = "last_digest_date"
         
         const val DEFAULT_DIGEST_HOUR = 8
         const val DEFAULT_DIGEST_MINUTE = 0
