@@ -63,6 +63,10 @@ interface EventDao {
     @Query("SELECT COUNT(*) FROM events WHERE isArchived = 0 AND isImportant = 1 AND dateMillis >= :startMillis")
     suspend fun countImportantUpcomingEvents(startMillis: Long): Int
     
+    // Synchronous query for background workers
+    @Query("SELECT * FROM events WHERE isArchived = 0 AND dateMillis BETWEEN :startMillis AND :endMillis ORDER BY dateMillis ASC")
+    suspend fun getEventsInDateRangeSync(startMillis: Long, endMillis: Long): List<EventEntity>
+    
     @Query("SELECT * FROM events WHERE id = :eventId LIMIT 1")
     suspend fun getEventById(eventId: Int): EventEntity?
 }

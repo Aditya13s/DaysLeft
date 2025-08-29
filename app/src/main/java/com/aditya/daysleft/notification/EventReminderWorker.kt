@@ -119,17 +119,22 @@ class EventReminderWorker(
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .apply {
+                // Enhanced alerting for important events and events today/tomorrow
                 if (isImportant || daysLeft <= 1) {
-                    setVibrate(longArrayOf(0, 300, 100, 300, 100, 300))
-                    setLights(0xFFFF0000.toInt(), 1000, 1000)
+                    setVibrate(longArrayOf(0, 500, 200, 500, 200, 500)) // Stronger vibration pattern
+                    setLights(0xFFFF0000.toInt(), 1000, 1000) // Red light
                     setDefaults(NotificationCompat.DEFAULT_SOUND)
+                } else {
+                    // Lighter alerting for regular future events
+                    setVibrate(longArrayOf(0, 200, 100, 200))
+                    setLights(0xFF0000FF.toInt(), 500, 500) // Blue light
                 }
             }
             .build()
             
         // Use event ID to ensure unique notifications for each event
-        val reminderType = inputData.getString("reminder_type") ?: "user_preference"
-        val notificationId = generateUniqueNotificationId(eventId, reminderType)
+        val reminderTypeFromInput = inputData.getString("reminder_type") ?: "user_preference"
+        val notificationId = generateUniqueNotificationId(eventId, reminderTypeFromInput)
         NotificationManagerCompat.from(applicationContext).notify(
             notificationId, 
             notification

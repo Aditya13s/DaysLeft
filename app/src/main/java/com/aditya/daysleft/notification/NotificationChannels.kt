@@ -14,7 +14,7 @@ object NotificationChannels {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             
-            // Upcoming Events Channel - Default priority
+            // Upcoming Events Channel - Enhanced for better visibility
             val upcomingEventsChannel = NotificationChannel(
                 UPCOMING_EVENTS_CHANNEL_ID,
                 "Upcoming Events",
@@ -27,9 +27,11 @@ object NotificationChannels {
                 setShowBadge(true)
                 lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
                 setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI, null)
+                vibrationPattern = longArrayOf(0, 200, 100, 200) // Lighter vibration for regular events
+                lightColor = 0xFF0000FF.toInt() // Blue light for regular events
             }
             
-            // Important Events Channel - High priority
+            // Important Events Channel - High priority with enhanced alerting
             val importantEventsChannel = NotificationChannel(
                 IMPORTANT_EVENTS_CHANNEL_ID,
                 "Important Events",
@@ -42,7 +44,8 @@ object NotificationChannels {
                 setShowBadge(true)
                 lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
                 setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI, null)
-                vibrationPattern = longArrayOf(0, 300, 100, 300, 100, 300)
+                vibrationPattern = longArrayOf(0, 500, 200, 500, 200, 500) // Stronger vibration
+                lightColor = 0xFFFF0000.toInt() // Red light for attention
             }
             
             // Daily Digest Channel - Low priority
