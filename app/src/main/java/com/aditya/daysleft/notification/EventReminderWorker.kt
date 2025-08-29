@@ -45,7 +45,7 @@ class EventReminderWorker(
             }
             
             // Show the notification
-            showReminderNotification(eventTitle, eventDateMillis, reminderDays, isImportant)
+            showReminderNotification(eventId, eventTitle, eventDateMillis, reminderDays, isImportant)
             
             Result.success()
         } catch (e: Exception) {
@@ -54,6 +54,7 @@ class EventReminderWorker(
     }
     
     private fun showReminderNotification(
+        eventId: Int,
         eventTitle: String, 
         eventDateMillis: Long, 
         reminderDays: Int, 
@@ -75,16 +76,25 @@ class EventReminderWorker(
         val daysLeft = DaysLeftUtil.daysLeft(eventDateMillis)
         
         val title = when {
-            daysLeft == 0L -> if (isImportant) "⭐ Important Event Today!" else "📅 Event Today!"
-            daysLeft == 1L -> if (isImportant) "⭐ Important Event Tomorrow!" else "📅 Event Tomorrow!"
+            daysLeft == 0 -> if (isImportant) "🚨 Important Event Today!" else "📅 Event Today!"
+            daysLeft == 1 -> if (isImportant) "⭐ Important Event Tomorrow!" else "⏰ Event Tomorrow!"
             isImportant -> "⭐ Important Event in $daysLeft days"
-            else -> "📅 Event in $daysLeft days"
+            else -> "📌 Event in $daysLeft days"
         }
         
+        val reminderType = inputData.getString("reminder_type") ?: "user_preference"
         val content = when {
-            daysLeft == 0L -> "$eventTitle is TODAY! ($eventDate)"
-            daysLeft == 1L -> "$eventTitle is TOMORROW ($eventDate)"
-            else -> "$eventTitle is in $daysLeft days ($eventDate)"
+            daysLeft == 0 -> "🚨 $eventTitle is TODAY! ($eventDate)"
+            daysLeft == 1 -> "⏰ $eventTitle is TOMORROW ($eventDate)"
+            else -> {
+                val reminderTypeText = when (reminderType) {
+                    "user_preference" -> "Custom reminder"
+                    "automatic_1day" -> "1-day reminder"
+                    "automatic_3day" -> "3-day reminder"
+                    else -> if (reminderType.startsWith("important_daily")) "Daily reminder" else "Reminder"
+                }
+                "📌 $eventTitle is in $daysLeft days ($eventDate) - $reminderTypeText"
+            }
         }
         
         val priority = if (isImportant || daysLeft <= 1) 
@@ -111,11 +121,18 @@ class EventReminderWorker(
             }
             .build()
             
-        // Use a simpler notification ID based on event title hash
-        val notificationId = eventTitle.hashCode()
+        // Use event ID to ensure unique notifications for each event
+        val reminderType = inputData.getString("reminder_type") ?: "user_preference"
+        val notificationId = generateUniqueNotificationId(eventId, reminderType)
         NotificationManagerCompat.from(applicationContext).notify(
             notificationId, 
             notification
         )
+    }
+    
+    private fun generateUniqueNotificationId(eventId: Int, reminderType: String): Int {
+        // Generate unique notification ID by combining event ID with reminder type hash
+        // This ensures each event can have multiple unique notifications
+        return eventId * 1000 + reminderType.hashCode().and(0xFFF) // Keep last 12 bits of hash
     }
 }
