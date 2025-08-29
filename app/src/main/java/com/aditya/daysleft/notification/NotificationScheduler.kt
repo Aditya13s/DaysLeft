@@ -19,46 +19,130 @@ class NotificationScheduler(private val context: Context) {
         
         val currentTime = System.currentTimeMillis()
         
-        // Schedule only the user's preferred reminder time
-        scheduleOriginalReminder(event, currentTime)
+        // Schedule multiple reminders for better coverage
+        scheduleMultipleReminders(event, currentTime)
     }
     
-    private fun scheduleOriginalReminder(event: Event, currentTime: Long) {
-        val reminderTime = event.dateMillis - (event.reminderOffsetDays * 24 * 60 * 60 * 1000L)
+    private fun scheduleMultipleReminders(event: Event, currentTime: Long) {
+        val userPreferenceDays = event.reminderOffsetDays
+        val eventDate = event.dateMillis
         
-        // Only schedule if the reminder time is in the future
-        if (reminderTime > currentTime) {
-            val delay = reminderTime - currentTime
+        // List of reminder intervals to schedule (in days before event)
+        val reminderIntervals = mutableSetOf<Int>()
+        
+        // Always add user preference
+        reminderIntervals.add(userPreferenceDays)
+        
+        // Add automatic reminders if they don't conflict with user preference
+        if (userPreferenceDays != 1) {
+            reminderIntervals.add(1) // 1 day before
+        }
+        if (userPreferenceDays != 3) {
+            reminderIntervals.add(3) // 3 days before
+        }
+        
+        // Schedule each unique reminder interval
+        reminderIntervals.forEach { reminderDays ->
+            val reminderTime = eventDate - (reminderDays * 24 * 60 * 60 * 1000L)
             
-            val inputData = Data.Builder()
-                .putInt("event_id", event.id)
-                .putString("event_title", event.title)
-                .putLong("event_date", event.dateMillis)
-                .putInt("reminder_days", event.reminderOffsetDays)
-                .putBoolean("is_important", event.isImportant)
-                .putString("reminder_type", "user_preference")
-                .build()
+            // Only schedule if the reminder time is in the future
+            if (reminderTime > currentTime) {
+                val reminderType = when (reminderDays) {
+                    userPreferenceDays -> "user_preference"
+                    1 -> "automatic_1day"
+                    3 -> "automatic_3day"
+                    else -> "custom_${reminderDays}day"
+                }
+                
+                scheduleIndividualReminder(event, reminderTime, currentTime, reminderDays, reminderType)
+            }
+        }
+        
+        // Schedule daily reminders for important events (up to the event date)
+        if (event.isImportant) {
+            scheduleImportantEventDailyReminders(event, currentTime)
+        }
+    }
+    
+    private fun scheduleIndividualReminder(
+        event: Event, 
+        reminderTime: Long, 
+        currentTime: Long, 
+        reminderDays: Int, 
+        reminderType: String
+    ) {
+        val delay = reminderTime - currentTime
+        
+        val inputData = Data.Builder()
+            .putInt("event_id", event.id)
+            .putString("event_title", event.title)
+            .putLong("event_date", event.dateMillis)
+            .putInt("reminder_days", reminderDays)
+            .putBoolean("is_important", event.isImportant)
+            .putString("reminder_type", reminderType)
+            .build()
+        
+        val reminderWork = OneTimeWorkRequestBuilder<EventReminderWorker>()
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setInputData(inputData)
+            .addTag(getEventReminderTag(event.id, reminderType))
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .setRequiresBatteryNotLow(false)
+                    .setRequiresCharging(false)
+                    .setRequiresDeviceIdle(false)
+                    .build()
+            )
+            .build()
+        
+        workManager.enqueue(reminderWork)
+    }
+    
+    private fun scheduleImportantEventDailyReminders(event: Event, currentTime: Long) {
+        val eventDate = event.dateMillis
+        val oneDayInMillis = 24 * 60 * 60 * 1000L
+        val userPreferenceDays = event.reminderOffsetDays
+        
+        // Schedule smart daily reminders for important events
+        // Only schedule for up to 3 days before to avoid notification fatigue
+        val maxDailyReminders = minOf(3, userPreferenceDays - 1)
+        
+        for (daysBeforeEvent in 1..maxDailyReminders) {
+            // Skip if this conflicts with user preference or automatic reminders
+            if (daysBeforeEvent == userPreferenceDays || daysBeforeEvent == 1 || daysBeforeEvent == 3) {
+                continue
+            }
             
-            val reminderWork = OneTimeWorkRequestBuilder<EventReminderWorker>()
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .setInputData(inputData)
-                .addTag(getEventReminderTag(event.id))
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                        .setRequiresBatteryNotLow(false)
-                        .setRequiresCharging(false)
-                        .setRequiresDeviceIdle(false)
-                        .build()
+            val reminderTime = eventDate - (daysBeforeEvent * oneDayInMillis)
+            
+            if (reminderTime > currentTime) {
+                scheduleIndividualReminder(
+                    event, 
+                    reminderTime, 
+                    currentTime, 
+                    daysBeforeEvent, 
+                    "important_daily_${daysBeforeEvent}"
                 )
-                .build()
-            
-            workManager.enqueue(reminderWork)
+            }
         }
     }
     
     fun cancelEventReminder(eventId: Int) {
-        workManager.cancelAllWorkByTag(getEventReminderTag(eventId))
+        // Cancel all reminders for this event using a more efficient approach
+        // This will cancel all work items that have the event ID in their tag
+        workManager.cancelAllWorkByTag("event_reminder_$eventId")
+        
+        // Also cancel specific reminder types to be thorough
+        val reminderTypes = listOf("user_preference", "automatic_1day", "automatic_3day")
+        reminderTypes.forEach { type ->
+            workManager.cancelAllWorkByTag(getEventReminderTag(eventId, type))
+        }
+        
+        // Cancel daily reminders for important events (limited to 3 days)
+        for (i in 1..3) {
+            workManager.cancelAllWorkByTag(getEventReminderTag(eventId, "important_daily_$i"))
+        }
     }
     
     fun scheduleDailyDigest() {
@@ -131,6 +215,9 @@ class NotificationScheduler(private val context: Context) {
     }
     
     private fun getEventReminderTag(eventId: Int): String = "event_reminder_$eventId"
+    
+    private fun getEventReminderTag(eventId: Int, reminderType: String): String = 
+        "event_reminder_${eventId}_$reminderType"
     
     companion object {
         private const val DAILY_DIGEST_TAG = "daily_digest"
