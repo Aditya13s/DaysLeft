@@ -24,9 +24,24 @@ class DeleteEvent(private val repo: EventRepository) {
     suspend operator fun invoke(event: Event) = repo.deleteEvent(event)
 }
 
+class RestoreEvent(private val repo: EventRepository) {
+    suspend operator fun invoke(eventId: Int) = repo.restoreEvent(eventId)
+}
+
+class ArchiveOldEvents(private val repo: EventRepository) {
+    suspend operator fun invoke(cutoffMillis: Long) = repo.archiveOldEvents(cutoffMillis)
+}
+
+class GetEventsWithReminders(private val repo: EventRepository) {
+    operator fun invoke(currentTimeMillis: Long) = repo.getEventsWithReminders(currentTimeMillis)
+}
+
 data class EventUseCases(
     val getEvents: GetEvents,
     val addEvent: AddEvent,
     val updateEvent: UpdateEvent,
-    val deleteEvent: DeleteEvent
+    val deleteEvent: DeleteEvent,
+    val restoreEvent: RestoreEvent,
+    val archiveOldEvents: ArchiveOldEvents,
+    val getEventsWithReminders: GetEventsWithReminders
 )

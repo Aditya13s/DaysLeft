@@ -16,8 +16,8 @@ object DaysLeftUtil {
     }
     
     fun isUpcomingEvent(eventDateMillis: Long): Boolean {
-        // Use calendar day boundaries for consistency
-        return eventDateMillis >= getStartOfToday() + (24 * 60 * 60 * 1000) // Start of tomorrow
+        // Events that are today or in the future are considered upcoming
+        return eventDateMillis >= getStartOfToday()
     }
     
     fun isTodayEvent(eventDateMillis: Long): Boolean {
