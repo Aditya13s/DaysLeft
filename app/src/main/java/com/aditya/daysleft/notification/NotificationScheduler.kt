@@ -19,16 +19,8 @@ class NotificationScheduler(private val context: Context) {
         
         val currentTime = System.currentTimeMillis()
         
-        // Schedule original reminder based on user's preference
+        // Schedule only the user's preferred reminder time
         scheduleOriginalReminder(event, currentTime)
-        
-        // Schedule additional automatic reminders (1 day and 3 days before)
-        scheduleAutomaticReminders(event, currentTime)
-        
-        // For important events, also schedule daily reminders
-        if (event.isImportant && event.dateMillis > currentTime) {
-            scheduleImportantEventDailyReminders(event)
-        }
     }
     
     private fun scheduleOriginalReminder(event: Event, currentTime: Long) {
@@ -65,53 +57,8 @@ class NotificationScheduler(private val context: Context) {
         }
     }
     
-    private fun scheduleAutomaticReminders(event: Event, currentTime: Long) {
-        // Schedule 1-day before reminder (if different from user preference and in future)
-        val oneDayBefore = event.dateMillis - (1 * 24 * 60 * 60 * 1000L)
-        if (oneDayBefore > currentTime && event.reminderOffsetDays != 1) {
-            scheduleAdditionalReminder(event, oneDayBefore, currentTime, 1, "automatic_1day")
-        }
-        
-        // Schedule 3-day before reminder (if different from user preference and in future)
-        val threeDaysBefore = event.dateMillis - (3 * 24 * 60 * 60 * 1000L)
-        if (threeDaysBefore > currentTime && event.reminderOffsetDays != 3) {
-            scheduleAdditionalReminder(event, threeDaysBefore, currentTime, 3, "automatic_3day")
-        }
-    }
-    
-    private fun scheduleAdditionalReminder(event: Event, reminderTime: Long, currentTime: Long, 
-                                         reminderDays: Int, reminderType: String) {
-        val delay = reminderTime - currentTime
-        
-        val inputData = Data.Builder()
-            .putInt("event_id", event.id)
-            .putString("event_title", event.title)
-            .putLong("event_date", event.dateMillis)
-            .putInt("reminder_days", reminderDays)
-            .putBoolean("is_important", event.isImportant)
-            .putString("reminder_type", reminderType)
-            .build()
-        
-        val reminderWork = OneTimeWorkRequestBuilder<EventReminderWorker>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .setInputData(inputData)
-            .addTag(getEventReminderTag(event.id))
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                    .setRequiresBatteryNotLow(false)
-                    .setRequiresCharging(false)
-                    .setRequiresDeviceIdle(false)
-                    .build()
-            )
-            .build()
-        
-        workManager.enqueue(reminderWork)
-    }
-    
     fun cancelEventReminder(eventId: Int) {
         workManager.cancelAllWorkByTag(getEventReminderTag(eventId))
-        workManager.cancelAllWorkByTag(getImportantEventDailyTag(eventId))
     }
     
     fun scheduleDailyDigest() {
@@ -184,58 +131,6 @@ class NotificationScheduler(private val context: Context) {
     }
     
     private fun getEventReminderTag(eventId: Int): String = "event_reminder_$eventId"
-    
-    private fun getImportantEventDailyTag(eventId: Int): String = "important_daily_$eventId"
-    
-    private fun scheduleImportantEventDailyReminders(event: Event) {
-        // Cancel any existing important daily reminders
-        workManager.cancelAllWorkByTag(getImportantEventDailyTag(event.id))
-        
-        val currentTime = System.currentTimeMillis()
-        val eventTime = event.dateMillis
-        
-        // Schedule daily reminders starting from today until the event date
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = currentTime
-            set(Calendar.HOUR_OF_DAY, 9) // 9 AM daily reminder
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        
-        // If 9 AM today has passed, start from tomorrow
-        if (calendar.timeInMillis <= currentTime) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        
-        // Only schedule if the event is more than 1 day away
-        if (eventTime - currentTime > 24 * 60 * 60 * 1000) {
-            val delay = calendar.timeInMillis - currentTime
-            
-            val inputData = Data.Builder()
-                .putInt("event_id", event.id)
-                .putString("event_title", event.title)
-                .putLong("event_date", event.dateMillis)
-                .putBoolean("is_important_daily", true)
-                .build()
-            
-            val importantDailyWork = PeriodicWorkRequestBuilder<EventReminderWorker>(1, TimeUnit.DAYS)
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .setInputData(inputData)
-                .addTag(getImportantEventDailyTag(event.id))
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                        .setRequiresBatteryNotLow(false)
-                        .setRequiresCharging(false)
-                        .setRequiresDeviceIdle(false)
-                        .build()
-                )
-                .build()
-            
-            workManager.enqueue(importantDailyWork)
-        }
-    }
     
     companion object {
         private const val DAILY_DIGEST_TAG = "daily_digest"
